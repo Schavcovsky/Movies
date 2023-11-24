@@ -9,6 +9,15 @@ import UIKit
 
 class DashboardViewController: UIViewController {
     
+    let subtitleLabel: UILabel = {
+        let label = UILabel()
+        label.text = "Find yout movies"
+        label.textColor = UIColor(named: "textColor")
+        label.textAlignment = .left
+        label.font = UIFont.boldSystemFont(ofSize: 18)
+        return label
+    }()
+
     let searchBar: UISearchBar = {
         let searchBar = UISearchBar()
         searchBar.placeholder = "Search Here ..."
@@ -16,15 +25,66 @@ class DashboardViewController: UIViewController {
         searchBar.backgroundColor = .clear
         return searchBar
     }()
+    
+    let categoriesLabel: UILabel = {
+        let label = UILabel()
+        label.text = "Categories"
+        label.textColor = UIColor(named: "textColor")
+        label.textAlignment = .left
+        label.font = UIFont.boldSystemFont(ofSize: 18)
+        return label
+    }()
+    
     let categorySegmentedControl = UISegmentedControl(items: ["Top Rated", "Popular", "Action"])
     let moviesCollectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
-    let loadMoreButton = UIButton(type: .system)
-    let watchListButton = UIButton(type: .system)
+    let loadMoreButton: UIButton = {
+        let button = UIButton()
+        button.setTitle("Load More", for: .normal)
+        button.setTitleColor(UIColor(named: "textColor"), for: .normal)
+        return button
+    }()
+    
+    let watchListButton: UIButton = {
+        let button = UIButton()
+        button.backgroundColor = UIColor(named: "primaryAccentColor")
+        button.setTitle("Watch List", for: .normal)
+        button.setTitleColor(UIColor(named: "backgroundColor"), for: .normal)
+        button.titleLabel?.font = UIFont.boldSystemFont(ofSize: UIFont.systemFontSize)
+
+        if let image = UIImage(named: "bi_bookmark.empty")?.withRenderingMode(.alwaysTemplate) {
+            button.setImage(image, for: .normal)
+            button.tintColor = UIColor(named: "backgroundColor") // Set the desired tint color here
+        }
+        button.layer.cornerRadius = 16
+
+        // Set title and image for the right side of the button
+        button.transform = CGAffineTransform(scaleX: -1.0, y: 1.0)
+        button.titleLabel?.transform = CGAffineTransform(scaleX: -1.0, y: 1.0)
+        button.imageView?.transform = CGAffineTransform(scaleX: -1.0, y: 1.0)
+
+        // Adjust the insets to position the image to the right of the text
+        let spacing: CGFloat = 16 // the amount of spacing to appear between image and text
+        button.imageEdgeInsets = UIEdgeInsets(top: 0, left: -spacing, bottom: 0, right: 0)
+        button.titleEdgeInsets = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
+
+        return button
+    }()
+
+    let movies = [
+        Movie(title: "Avengers End Game", releaseDate: "2019-08-03", rating: 9.5, posterImageName: "endgame"),
+        Movie(title: "Spiderman No Way Home", releaseDate: "2021-12-17", rating: 9.5, posterImageName: "spiderman")
+    ]
     
     override func viewDidLoad() {
         super.viewDidLoad()
         setupViews()
         layoutViews()
+        setupNavigationBar()
+    }
+    
+    func setupNavigationBar() {
+        navigationItem.title = "Dashboard"
+        navigationController?.navigationBar.prefersLargeTitles = true
     }
     
     func setupViews() {
@@ -44,7 +104,9 @@ class DashboardViewController: UIViewController {
         watchListButton.setTitle("Watch List", for: .normal)
         
         // Add subviews
+        view.addSubview(subtitleLabel)
         view.addSubview(searchBar)
+        view.addSubview(categoriesLabel)
         view.addSubview(categorySegmentedControl)
         view.addSubview(moviesCollectionView)
         view.addSubview(loadMoreButton)
@@ -55,42 +117,55 @@ class DashboardViewController: UIViewController {
     }
     
     func layoutViews() {
+        subtitleLabel.translatesAutoresizingMaskIntoConstraints = false
         searchBar.translatesAutoresizingMaskIntoConstraints = false
+        categoriesLabel.translatesAutoresizingMaskIntoConstraints = false
         categorySegmentedControl.translatesAutoresizingMaskIntoConstraints = false
         moviesCollectionView.translatesAutoresizingMaskIntoConstraints = false
         loadMoreButton.translatesAutoresizingMaskIntoConstraints = false
         watchListButton.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
+            
+            // Search Sub Title Button Constraints
+            subtitleLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16),
+            subtitleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            subtitleLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            
             // Search Bar Constraints
-            searchBar.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            searchBar.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            searchBar.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            searchBar.topAnchor.constraint(equalTo: subtitleLabel.bottomAnchor, constant: 8),
+            searchBar.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 8),
+            searchBar.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -8),
+            
+            //
+            categoriesLabel.topAnchor.constraint(equalTo: searchBar.bottomAnchor, constant: 16),
+            categoriesLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            categoriesLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             
             // Category Segmented Control Constraints
-            categorySegmentedControl.topAnchor.constraint(equalTo: searchBar.bottomAnchor, constant: 10),
-            categorySegmentedControl.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10),
-            categorySegmentedControl.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10),
+            categorySegmentedControl.topAnchor.constraint(equalTo: categoriesLabel.bottomAnchor, constant: 16),
+            categorySegmentedControl.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            categorySegmentedControl.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             
             // Movies Collection View Constraints
-            moviesCollectionView.topAnchor.constraint(equalTo: categorySegmentedControl.bottomAnchor),
+            moviesCollectionView.topAnchor.constraint(equalTo: categorySegmentedControl.bottomAnchor, constant: 16),
             moviesCollectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             moviesCollectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             moviesCollectionView.bottomAnchor.constraint(equalTo: loadMoreButton.topAnchor),
             
             // Assuming we want the collection view to take most of the screen, leaving space for buttons at the bottom
-            moviesCollectionView.bottomAnchor.constraint(equalTo: loadMoreButton.topAnchor, constant: -10),
+            moviesCollectionView.bottomAnchor.constraint(equalTo: loadMoreButton.topAnchor, constant: -16),
             
             // Load More Button Constraints
-            loadMoreButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10),
+            loadMoreButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             loadMoreButton.trailingAnchor.constraint(equalTo: view.centerXAnchor, constant: -5),
-            loadMoreButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -10),
+            loadMoreButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -16),
             loadMoreButton.heightAnchor.constraint(equalToConstant: 50),
             
             // Watch List Button Constraints - placed next to Load More button
             watchListButton.leadingAnchor.constraint(equalTo: view.centerXAnchor, constant: 5),
-            watchListButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10),
-            watchListButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -10),
+            watchListButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            watchListButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -16),
             watchListButton.heightAnchor.constraint(equalToConstant: 50),
             watchListButton.widthAnchor.constraint(equalTo: loadMoreButton.widthAnchor) // Same width as Load More Button
         ])
@@ -101,7 +176,7 @@ extension DashboardViewController: UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         // Return the number of mock data items
-        return mockMoviesData().count
+        return movies.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -109,18 +184,9 @@ extension DashboardViewController: UICollectionViewDataSource {
             fatalError("Unable to dequeue MovieCollectionViewCell")
         }
         // Configure the cell with mock data
-        let movie = mockMoviesData()[indexPath.item]
+        let movie = movies[indexPath.item]
         cell.configure(with: movie)
         return cell
-    }
-    
-    private func mockMoviesData() -> [Movie] {
-        // Create an array of mock movies
-        let movies = [
-            Movie(title: "Avengers End Game", releaseDate: "2019-08-03", rating: 9.5, posterImageName: "endgame"),
-            Movie(title: "Spiderman No Way Home", releaseDate: "2021-12-17", rating: 9.5, posterImageName: "spiderman")
-        ]
-        return movies
     }
 }
 
@@ -184,7 +250,7 @@ class MovieCollectionViewCell: UICollectionViewCell {
     
     private let titleLabel: UILabel = {
         let label = UILabel()
-        label.font = UIFont.boldSystemFont(ofSize: 16)
+        label.font = UIFont.boldSystemFont(ofSize: 12)
         label.textColor = .white
         label.translatesAutoresizingMaskIntoConstraints = false
         label.numberOfLines = 0
@@ -193,7 +259,7 @@ class MovieCollectionViewCell: UICollectionViewCell {
     
     private let releaseDateLabel: UILabel = {
         let label = UILabel()
-        label.font = UIFont.systemFont(ofSize: 14)
+        label.font = UIFont.systemFont(ofSize: 12)
         label.textColor = .white
         label.translatesAutoresizingMaskIntoConstraints = false
         label.numberOfLines = 0
@@ -202,7 +268,7 @@ class MovieCollectionViewCell: UICollectionViewCell {
     
     private let averageRatingLabel: UILabel = {
         let label = UILabel()
-        label.font = UIFont.systemFont(ofSize: 14)
+        label.font = UIFont.systemFont(ofSize: 12)
         label.textColor = .white
         label.translatesAutoresizingMaskIntoConstraints = false
         label.numberOfLines = 0
@@ -212,7 +278,7 @@ class MovieCollectionViewCell: UICollectionViewCell {
     private let checkmarkButton: UIButton = {
         let button = UIButton()
         let configuration = UIImage.SymbolConfiguration(pointSize: 20, weight: .regular)
-        button.setImage(UIImage(systemName: "checkmark.circle.fill", withConfiguration: configuration), for: .normal)
+        button.setImage(UIImage(named: "bi_bookmark.empty", in: nil, with: configuration), for: .normal)
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
@@ -220,7 +286,7 @@ class MovieCollectionViewCell: UICollectionViewCell {
     private let starRatingButton: UIButton = {
         let button = UIButton()
         let configuration = UIImage.SymbolConfiguration(pointSize: 20, weight: .regular)
-        button.setImage(UIImage(systemName: "star.fill", withConfiguration: configuration), for: .normal)
+        button.setImage(UIImage(named: "clarity_star.empty", in: nil, with: configuration), for: .normal)
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
@@ -229,7 +295,6 @@ class MovieCollectionViewCell: UICollectionViewCell {
         super.init(frame: frame)
         setupViews()
         setupConstraints()
-        
     }
     
     required init?(coder: NSCoder) {
@@ -295,7 +360,6 @@ class MovieCollectionViewCell: UICollectionViewCell {
     }
     
     func configure(with movie: Movie) {
-        
         titleLabel.text = "Title:\n" + movie.title
         releaseDateLabel.text = "Release Date:\n" + movie.releaseDate
         averageRatingLabel.text = "Average Rating:\n" + String(format: "%.1f", movie.rating)

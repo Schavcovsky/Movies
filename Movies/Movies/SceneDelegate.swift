@@ -24,7 +24,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         // Set the initial view controller
         let initialViewController = DashboardViewController()
-        window.rootViewController = initialViewController
+        let navigationController = UINavigationController(rootViewController: initialViewController)
+        window.rootViewController = navigationController
         
         // Set the window and make it visible
         self.window = window
