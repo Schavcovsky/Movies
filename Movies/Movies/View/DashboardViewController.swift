@@ -11,7 +11,7 @@ class DashboardViewController: UIViewController {
     
     let subtitleLabel: UILabel = {
         let label = UILabel()
-        label.text = "Find yout movies"
+        label.text = "Find your movies"
         label.textColor = UIColor(named: "textColor")
         label.textAlignment = .left
         label.font = UIFont.boldSystemFont(ofSize: 18)
@@ -37,6 +37,7 @@ class DashboardViewController: UIViewController {
     
     let categorySegmentedControl = UISegmentedControl(items: ["Top Rated", "Popular", "Action"])
     let moviesCollectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
+    
     let loadMoreButton: UIButton = {
         let button = UIButton()
         button.setTitle("Load More", for: .normal)
