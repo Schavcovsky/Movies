@@ -23,7 +23,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let window = UIWindow(windowScene: windowScene)
         
         // Set the initial view controller
-        let initialViewController = ViewController()
+        let initialViewController = DashboardViewController()
         window.rootViewController = initialViewController
         
         // Set the window and make it visible
