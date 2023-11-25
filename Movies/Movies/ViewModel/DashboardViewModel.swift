@@ -20,6 +20,8 @@ class DashboardViewModel {
         return movies.count
     }
     
+    var currentPage: Int = 1
+    
     // Closures for binding
     var reloadCollectionViewClosure: (()->())?
     
@@ -31,8 +33,8 @@ class DashboardViewModel {
     }
     
     // Fetching movies
-    func fetchMovies(category: String) {
-        networkManager.fetchMovies(forCategory: category) { [weak self] (data, error) in
+    func fetchMovies(category: String, page: Int) {
+        networkManager.fetchMovies(forCategory: category, page: page) { [weak self] (data, error) in
             guard let self = self else { return }
 
             if let error = error {

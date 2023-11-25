@@ -27,6 +27,16 @@ class DashboardViewController: UIViewController {
         return searchBar
     }()
     
+    let searchButton: UIButton = {
+        let button = UIButton()
+        button.setImage(UIImage(systemName: "magnifyingglass"), for: .normal) // Use the system symbol for magnifying glass
+        button.backgroundColor = UIColor(named: "secondaryAccentColor")
+        button.tintColor = UIColor(named: "textColor")
+        button.contentEdgeInsets = UIEdgeInsets(top: 6, left: 6, bottom: 6, right: 6)
+        button.layer.cornerRadius = 8
+        return button
+    }()
+    
     let categoriesLabel: UILabel = {
         let label = UILabel()
         label.text = "Categories"
@@ -89,7 +99,7 @@ class DashboardViewController: UIViewController {
         }
 
         // Fetch top-rated movies
-        viewModel?.fetchMovies(category: MovieCategoryTopRated)
+        viewModel?.fetchMovies(category: MovieCategoryTopRated, page: viewModel?.currentPage ?? 1)
     }
     
     func setupNavigationBar() {
@@ -116,6 +126,7 @@ class DashboardViewController: UIViewController {
         // Add subviews
         view.addSubview(subtitleLabel)
         view.addSubview(searchBar)
+        view.addSubview(searchButton)
         view.addSubview(categoriesLabel)
         view.addSubview(categorySegmentedControl)
         view.addSubview(moviesCollectionView)
@@ -124,11 +135,14 @@ class DashboardViewController: UIViewController {
         
         view.backgroundColor = UIColor(named: "backgroundColor")
         moviesCollectionView.backgroundColor = .clear
+        
+        loadMoreButton.addTarget(self, action: #selector(loadMoreButtonTapped), for: .touchUpInside)
     }
     
     func layoutViews() {
         subtitleLabel.translatesAutoresizingMaskIntoConstraints = false
         searchBar.translatesAutoresizingMaskIntoConstraints = false
+        searchButton.translatesAutoresizingMaskIntoConstraints = false
         categoriesLabel.translatesAutoresizingMaskIntoConstraints = false
         categorySegmentedControl.translatesAutoresizingMaskIntoConstraints = false
         moviesCollectionView.translatesAutoresizingMaskIntoConstraints = false
@@ -145,7 +159,10 @@ class DashboardViewController: UIViewController {
             // Search Bar Constraints
             searchBar.topAnchor.constraint(equalTo: subtitleLabel.bottomAnchor, constant: 8),
             searchBar.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 8),
-            searchBar.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -8),
+            searchBar.trailingAnchor.constraint(equalTo: searchButton.leadingAnchor, constant: -8),
+            
+            searchButton.centerYAnchor.constraint(equalTo: searchBar.centerYAnchor),
+            searchButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             
             //
             categoriesLabel.topAnchor.constraint(equalTo: searchBar.bottomAnchor, constant: 16),
@@ -179,6 +196,13 @@ class DashboardViewController: UIViewController {
             watchListButton.heightAnchor.constraint(equalToConstant: 50),
             watchListButton.widthAnchor.constraint(equalTo: loadMoreButton.widthAnchor) // Same width as Load More Button
         ])
+    }
+    
+    @objc func loadMoreButtonTapped() {
+        viewModel?.currentPage += 1
+        if let currentPage = viewModel?.currentPage {
+            viewModel?.fetchMovies(category: MovieCategoryTopRated, page: currentPage)
+        }
     }
 }
 

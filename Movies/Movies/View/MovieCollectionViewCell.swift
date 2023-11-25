@@ -22,7 +22,7 @@ class MovieCollectionViewCell: UICollectionViewCell {
     private let titleLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.boldSystemFont(ofSize: 12)
-        label.textColor = .white
+        label.textColor = UIColor(named: "textColor")
         label.translatesAutoresizingMaskIntoConstraints = false
         label.numberOfLines = 0
         return label
@@ -31,7 +31,7 @@ class MovieCollectionViewCell: UICollectionViewCell {
     private let releaseDateLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 12)
-        label.textColor = .white
+        label.textColor = UIColor(named: "textColor")
         label.translatesAutoresizingMaskIntoConstraints = false
         label.numberOfLines = 0
         return label
@@ -40,7 +40,7 @@ class MovieCollectionViewCell: UICollectionViewCell {
     private let averageRatingLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 12)
-        label.textColor = .white
+        label.textColor = UIColor(named: "textColor")
         label.translatesAutoresizingMaskIntoConstraints = false
         label.numberOfLines = 0
         return label
@@ -92,7 +92,6 @@ class MovieCollectionViewCell: UICollectionViewCell {
         // Constants for padding and icon size
         let padding: CGFloat = 8
         let iconSize: CGFloat = 20
-        let fixedheight: CGFloat = 100
         let fixedWidth: CGFloat = 100
         
         NSLayoutConstraint.activate([
@@ -100,13 +99,13 @@ class MovieCollectionViewCell: UICollectionViewCell {
             movieImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: padding),
             movieImageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: padding),
             movieImageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -padding),
-            movieImageView.heightAnchor.constraint(equalToConstant: fixedheight),
+            movieImageView.heightAnchor.constraint(equalToConstant: contentView.frame.height),
             movieImageView.widthAnchor.constraint(equalToConstant: fixedWidth),
                         
             // Title Label Constraints
             titleLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: padding),
             titleLabel.leadingAnchor.constraint(equalTo: movieImageView.trailingAnchor, constant: padding),
-            titleLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -padding - iconSize * 2),
+            titleLabel.trailingAnchor.constraint(equalTo: checkmarkButton.leadingAnchor, constant: -padding),
             
             // Release Date Label Constraints
             releaseDateLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: padding),
