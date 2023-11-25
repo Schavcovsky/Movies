@@ -10,8 +10,11 @@ import Foundation
 final class MovieDetailsViewModel: ObservableObject {
     @Published var isLoading: Bool = false
     @Published var movie: Result
+    @Published var reviews: [Review] = []
+    @Published var currentPage: Int = 1
+    @Published var reviewsLoaded: Bool = false // Added property to track reviews loaded
     private var networkManager: NetworkManager
-
+    
     init() {
         movie = Result(author: nil, authorDetails: nil, adult: nil, backdropPath: nil, content: nil, createdAt: nil, genres: nil, genreIDS: nil, id: nil, originalLanguage: nil, originalTitle: nil, overview: nil, popularity: nil, posterPath: nil, releaseDate: nil, title: nil, updatedAt: nil, url: nil, video: nil, voteAverage: nil, voteCount: nil)
         networkManager = NetworkManager.shared()
@@ -46,17 +49,30 @@ final class MovieDetailsViewModel: ObservableObject {
         }
     }
 
-    func fetchMovieRatings(movieId: Int, pageNumber: Int) {
-        DispatchQueue.main.async {
-            self.isLoading = true
-        }
-        networkManager.fetchMovieRatings(forId: movieId, page: pageNumber) { [weak self] data, error in
+    func fetchReviews(movieId: Int, page: Int) {
+        isLoading = true
+        networkManager.fetchMovieRatings(forId: movieId, page: page) { [weak self] data, error in
             DispatchQueue.main.async {
                 self?.isLoading = false
                 guard let self = self else { return }
 
-                // Handle the response
-                // Parse data and update relevant properties
+                if let error = error {
+                    // Handle error
+                    return
+                }
+
+                guard let data = data else {
+                    // Handle no data received
+                    return
+                }
+
+                do {
+                    let reviewsResponse = try JSONDecoder().decode(ReviewsResponse.self, from: data)
+                    self.reviews.append(contentsOf: reviewsResponse.results)
+                    // Handle pagination if needed
+                } catch {
+                    // Handle decoding error
+                }
             }
         }
     }

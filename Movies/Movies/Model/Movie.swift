@@ -87,3 +87,44 @@ struct Genre: Codable {
     let id: Int?
     let name: String?
 }
+
+////
+///
+///
+///
+
+// MARK: - ReviewsResponse
+struct ReviewsResponse: Codable {
+    let id: Int
+    let page: Int
+    let results: [Review]
+    let totalPages: Int
+    let totalResults: Int
+    
+    enum CodingKeys: String, CodingKey {
+        case id, page, results
+        case totalPages = "total_pages"
+        case totalResults = "total_results"
+    }
+}
+
+// MARK: - Review
+struct Review: Codable {
+    let author: String?
+    let authorDetails: AuthorDetails?
+    let content: String?
+    let createdAt: String?
+    let id: String?
+    let updatedAt: String?
+    let url: String?
+    
+    enum CodingKeys: String, CodingKey {
+        case author
+        case authorDetails = "author_details"
+        case content
+        case createdAt = "created_at"
+        case id
+        case updatedAt = "updated_at"
+        case url
+    }
+}

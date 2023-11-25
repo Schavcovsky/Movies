@@ -15,19 +15,21 @@ struct MovieDetailsView: View {
     var body: some View {
         ScrollView {
             VStack {
-                GeometryReader { geometry in
-                    // Background Image with parallax effect
-                    if let backdropPath = viewModel.movie.backdropPath,
-                       let url = URL(string: "https://image.tmdb.org/t/p/original\(backdropPath)") {
+                if let backdropPath = viewModel.movie.backdropPath, !backdropPath.isEmpty,
+                   let url = URL(string: "https://image.tmdb.org/t/p/original\(backdropPath)") {
+                    GeometryReader { geometry in
                         KFImage(url)
                             .resizable()
                             .aspectRatio(contentMode: .fill)
-                            .frame(width: geometry.size.width, height: getHeaderHeight(for: geometry))
+                            .frame(width: geometry.size.width, height: self.getHeaderHeight(for: geometry))
                             .clipped()
-                            .offset(y: getHeaderOffset(for: geometry))
+                            .offset(y: self.getHeaderOffset(for: geometry))
                     }
+                    .frame(height: 300) // Allocate space for the backdrop image if it exists
+                } else {
+                    // If there is no backdropPath, dynamically adjust the padding
+                    Spacer().frame(height: 100)
                 }
-                .frame(height: 300) // Height for the background image
 
                 // Horizontal stack for the poster image and movie title
                 HStack(alignment: .top, spacing: 16) {
@@ -40,9 +42,8 @@ struct MovieDetailsView: View {
                             .frame(width: 120) // Adjust width as needed
                             .cornerRadius(8)
                             .shadow(radius: 4)
-                            .padding(.top, -100)
-                    }
-                   
+                            .padding(.top, ((viewModel.movie.backdropPath?.isEmpty) != nil) ? -100 : 0)
+                    }                   
 
                     // Movie Title and Genre Buttons
                     VStack(alignment: .leading, spacing: 8) {
@@ -77,6 +78,12 @@ struct MovieDetailsView: View {
                     }
                     .pickerStyle(SegmentedPickerStyle())
                     .padding(.bottom)
+                    .onChange(of: selectedTab) { newValue in
+                        if newValue == .reviews && !viewModel.reviewsLoaded {
+                            // Trigger the service call to fetch reviews here
+                            viewModel.fetchReviews(movieId: viewModel.movie.id ?? 0, page: viewModel.currentPage)
+                        }
+                    }
 
                     Group {
                         switch selectedTab {
@@ -118,15 +125,49 @@ struct MovieDetailsView: View {
 
     // Helper function for the Reviews View
     private func reviewsView() -> some View {
-        VStack {
-            // ... Your existing code for Reviews ...
+        VStack(alignment: .leading, spacing: 8) {
+            ForEach(viewModel.reviews, id: \.id) { review in
+                VStack(alignment: .leading, spacing: 4) {
+                    HStack {
+                        if let avatarPath = review.authorDetails?.avatarPath,
+                           let url = URL(string: "https://image.tmdb.org/t/p/w500\(avatarPath)") {
+                            KFImage(url)
+                                .resizable()
+                                .aspectRatio(contentMode: .fill)
+                                .frame(width: 50, height: 50)
+                                .clipShape(Circle())
+                        } else {
+                            Image(systemName: "person.fill")
+                                .resizable()
+                                .aspectRatio(contentMode: .fill)
+                                .frame(width: 50, height: 50)
+                                .background(Color.gray)
+                                .clipShape(Circle())
+                        }
+                        
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(review.author ?? "Unknown Author")
+                                .font(.headline)
+                            if let rating = review.authorDetails?.rating {
+                                Text("Rating: \(rating)/10")
+                                    .font(.subheadline)
+                            }
+                        }
+                    }
+                    
+                    Text(review.content ?? "")
+                        .font(.body)
+                        .padding(.top, 8)
+                    
+                    Divider()
+                }
+            }
         }
     }
 
     func getHeaderHeight(for geometry: GeometryProxy) -> CGFloat {
         let offset = geometry.frame(in: .global).minY
-        let size = offset > 0 ? 300 + offset : 300
-        return size
+        return max(0, 300 + offset) // This ensures that the header height doesn't go below 0
     }
 
     func getHeaderOffset(for geometry: GeometryProxy) -> CGFloat {
