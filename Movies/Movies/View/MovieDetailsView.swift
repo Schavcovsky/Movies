@@ -10,7 +10,8 @@ import Kingfisher
 
 struct MovieDetailsView: View {
     @ObservedObject var viewModel: MovieDetailsViewModel
-
+    @State private var selectedTab: DetailsTab = .about
+    
     var body: some View {
         ScrollView {
             VStack {
@@ -68,30 +69,58 @@ struct MovieDetailsView: View {
                         }
                         .padding(.bottom)
                     }
+                    
+                    Picker("Options", selection: $selectedTab) {
+                        ForEach(DetailsTab.allCases, id: \.self) { tab in
+                            Text(tab.title).tag(tab)
+                        }
+                    }
+                    .pickerStyle(SegmentedPickerStyle())
+                    .padding(.bottom)
 
-                    // Movie Overview
-                    Text("Overview:")
-                        .font(.headline)
-                    Text(viewModel.movie.overview ?? "Description not available.")
-                        .font(.subheadline)
-
-                    HStack {
-                       VStack(alignment: .leading) {
-                           DetailItem(title: "Release Date:", value: viewModel.movie.releaseDate ?? "N/A")
-                           DetailItem(title: "Average Rating:", value: viewModel.movie.voteAverage?.description ?? "N/A")
-                       }
-                       
-                       VStack(alignment: .leading) {
-                           DetailItem(title: "Rate Count:", value: viewModel.movie.voteCount?.description ?? "N/A")
-                           DetailItem(title: "Popularity:", value: viewModel.movie.popularity?.description ?? "N/A")
-                       }
-                   }
+                    Group {
+                        switch selectedTab {
+                        case .about:
+                            aboutMovieView()
+                        case .reviews:
+                            reviewsView()
+                        }
+                    }
+                    .animation(.default, value: selectedTab)
                 }
                 .padding()
             }
         }
         .edgesIgnoringSafeArea(.top) // Allow background image to extend into the top safe area
         .background(Color("backgroundColor"))
+    }
+    
+    private func aboutMovieView() -> some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("Overview:")
+                .font(.headline)
+            Text(viewModel.movie.overview ?? "Description not available.")
+                .font(.subheadline)
+
+            HStack {
+               VStack(alignment: .leading) {
+                   DetailItem(title: "Release Date:", value: viewModel.movie.releaseDate ?? "N/A")
+                   DetailItem(title: "Average Rating:", value: viewModel.movie.voteAverage?.description ?? "N/A")
+               }
+               
+               VStack(alignment: .leading) {
+                   DetailItem(title: "Rate Count:", value: viewModel.movie.voteCount?.description ?? "N/A")
+                   DetailItem(title: "Popularity:", value: viewModel.movie.popularity?.description ?? "N/A")
+               }
+           }
+        }
+    }
+
+    // Helper function for the Reviews View
+    private func reviewsView() -> some View {
+        VStack {
+            // ... Your existing code for Reviews ...
+        }
     }
 
     func getHeaderHeight(for geometry: GeometryProxy) -> CGFloat {
@@ -135,6 +164,20 @@ struct DetailItem: View {
             Text(title)
                 .bold()
             Text(value)
+        }
+    }
+}
+
+enum DetailsTab: CaseIterable {
+    case about
+    case reviews
+    
+    var title: String {
+        switch self {
+        case .about:
+            return "About Movie"
+        case .reviews:
+            return "Reviews"
         }
     }
 }
