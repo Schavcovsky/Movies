@@ -7,7 +7,7 @@
 
 import UIKit
 
-class DashboardViewController: UIViewController {
+class DashboardViewController: UIViewController, UISearchBarDelegate {
     var viewModel: DashboardViewModel?
     
     let subtitleLabel: UILabel = {
@@ -68,15 +68,6 @@ class DashboardViewController: UIViewController {
         button.layer.cornerRadius = 8
         return button
     }()
-
-    /*
-    let loadMoreButton: UIButton = {
-        let button = UIButton()
-        button.setTitle("Load More", for: .normal)
-        button.setTitleColor(UIColor(named: "textColor"), for: .normal)
-        return button
-    }()
-     */
     
     let watchListButton: UIButton = {
         let button = UIButton()
@@ -122,6 +113,9 @@ class DashboardViewController: UIViewController {
 
         // Fetch top-rated movies
         viewModel?.fetchMovies(category: MovieCategoryTopRated, page: viewModel?.currentPage ?? 1)
+        
+        searchBar.delegate = self
+        searchButton.addTarget(self, action: #selector(searchButtonTapped), for: .touchUpInside)
     }
     
     func setupNavigationBar() {
@@ -226,6 +220,21 @@ class DashboardViewController: UIViewController {
             watchListButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -16),
             watchListButton.heightAnchor.constraint(equalToConstant: 50),
         ])
+    }
+    
+    @objc func searchButtonTapped() {
+        guard let query = searchBar.text, !query.isEmpty else { return }
+        viewModel?.searchQuery = query
+        viewModel?.isSearchMode = true
+        viewModel?.searchMovies(query: query, page: viewModel?.currentPage ?? 1)
+    }
+
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        searchBar.resignFirstResponder()
+        guard let query = searchBar.text, !query.isEmpty else { return }
+        viewModel?.searchQuery = query
+        viewModel?.isSearchMode = true
+        viewModel?.searchMovies(query: query, page: viewModel?.currentPage ?? 1)
     }
     
     @objc func decreaseButtonTapped() {

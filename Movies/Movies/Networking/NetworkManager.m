@@ -25,8 +25,14 @@ NSString * const MovieCategoryUpcoming = @"movie/upcoming";
     return sharedManager;
 }
 
-- (void)fetchMoviesForCategory:(NSString *)category page:(NSInteger)page withCompletion:(void (^)(NSData * _Nullable data, NSError * _Nullable error))completion {
-    NSString *urlString = [self urlStringForCategory:category page:page];
+- (void)fetchMoviesForCategory:(NSString *)category query:(NSString *)query page:(NSInteger)page withCompletion:(void (^)(NSData * _Nullable data, NSError * _Nullable error))completion {
+    NSString *encodedQuery = [query stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
+    NSString *urlString;
+    if ([category isEqualToString:MovieCategorySearch]) {
+        urlString = [NSString stringWithFormat:@"%@%@&page=%ld&include_adult=false&language=en-US", [self baseUrlForCategory:category], encodedQuery, (long)page];
+    } else {
+        urlString = [self urlStringForCategory:category page:page];
+    }
     NSURL *url = [NSURL URLWithString:urlString];
     
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
@@ -51,9 +57,10 @@ NSString * const MovieCategoryUpcoming = @"movie/upcoming";
     return [NSString stringWithFormat:@"%@&page=%ld", baseUrl, (long)page];
 }
 
+
 - (NSString *)baseUrlForCategory:(NSString *)category {
     if ([category isEqualToString:MovieCategorySearch]) {
-        return @"https://api.themoviedb.org/3/search/movie?query=asd&include_adult=false&language=en-US&page=";
+        return @"https://api.themoviedb.org/3/search/movie?query=";
     } else if ([category isEqualToString:MovieCategoryNowPlaying]) {
         return @"https://api.themoviedb.org/3/movie/now_playing?language=en-US&page=";
     } else if ([category isEqualToString:MovieCategoryPopular]) {

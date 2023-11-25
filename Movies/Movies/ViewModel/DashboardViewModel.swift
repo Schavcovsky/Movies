@@ -22,6 +22,9 @@ class DashboardViewModel {
     
     var currentPage: Int = 1
     
+    var isSearchMode: Bool = false
+    var searchQuery: String?
+    
     // Closures for binding
     var reloadCollectionViewClosure: (()->())?
     
@@ -34,7 +37,7 @@ class DashboardViewModel {
     
     // Fetching movies
     func fetchMovies(category: String, page: Int) {
-        networkManager.fetchMovies(forCategory: category, page: page) { [weak self] (data, error) in
+        networkManager.fetchMovies(forCategory: category, query: "", page: page) { [weak self] (data, error) in
             guard let self = self else { return }
 
             if let error = error {
@@ -56,6 +59,33 @@ class DashboardViewModel {
                 }
             } catch {
                 print("Error decoding movies: \(error)")
+            }
+        }
+    }
+    
+    func searchMovies(query: String, page: Int) {
+        isSearchMode = true
+        searchQuery = query
+        networkManager.fetchMovies(forCategory: MovieCategorySearch, query: query, page: page) { [weak self] (data, error) in
+            guard let self = self else { return }
+
+            if let error = error {
+                print("Error searching movies: \(error.localizedDescription)")
+                return
+            }
+
+            guard let data = data else {
+                print("No data received from search")
+                return
+            }
+
+            do {
+                let movieResponse = try JSONDecoder().decode(Movie.self, from: data)
+                DispatchQueue.main.async {
+                    self.movies = movieResponse.results ?? []
+                }
+            } catch {
+                print("Error decoding search results: \(error)")
             }
         }
     }

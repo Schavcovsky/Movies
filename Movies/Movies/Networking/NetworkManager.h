@@ -18,7 +18,7 @@ extern NSString * const MovieCategoryUpcoming;
 @interface NetworkManager : NSObject
 
 + (instancetype)sharedManager;
-- (void)fetchMoviesForCategory:(NSString *)category page:(NSInteger)page withCompletion:(void (^)(NSData * _Nullable data, NSError * _Nullable error))completion;
+- (void)fetchMoviesForCategory:(NSString *)category query:(nullable NSString *)query page:(NSInteger)page withCompletion:(void (^)(NSData * _Nullable data, NSError * _Nullable error))completion;
 
 @end
 
