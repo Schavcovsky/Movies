@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import SwiftUI
 
 class DashboardViewController: UIViewController, UISearchBarDelegate {
     var viewModel: DashboardViewModel?
@@ -334,7 +335,13 @@ extension DashboardViewController: UICollectionViewDelegateFlowLayout {
 extension DashboardViewController: UICollectionViewDelegate {
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        if collectionView == categoriesCollectionView {
+        if collectionView == moviesCollectionView {
+            if let movie = viewModel?.movies[indexPath.item] {
+                let detailsView = MovieDetailsView(movie: movie)
+                let hostingController = UIHostingController(rootView: detailsView)
+                self.navigationController?.pushViewController(hostingController, animated: true)
+            }
+        } else {
             viewModel?.isSearchMode = false
             viewModel?.searchQuery = nil
             viewModel?.activeCategoryIndex = indexPath.item
