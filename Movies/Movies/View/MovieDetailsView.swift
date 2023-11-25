@@ -13,70 +13,122 @@ struct MovieDetailsView: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 10) {
-                // Movie Banner Image
-                KFImage(URL(string: "https://image.tmdb.org/t/p/w500\(viewModel.movie.backdropPath ?? "")"))
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
+            VStack {
+                GeometryReader { geometry in
+                    // Background Image with parallax effect
+                    if let backdropPath = viewModel.movie.backdropPath,
+                       let url = URL(string: "https://image.tmdb.org/t/p/original\(backdropPath)") {
+                        KFImage(url)
+                            .resizable()
+                            .aspectRatio(contentMode: .fill)
+                            .frame(width: geometry.size.width, height: getHeaderHeight(for: geometry))
+                            .clipped()
+                            .offset(y: getHeaderOffset(for: geometry))
+                    }
+                }
+                .frame(height: 300) // Height for the background image
 
-                // Movie Title
-                Text(viewModel.movie.title ?? "N/A")
-                    .font(.title)
-                    .fontWeight(.bold)
+                // Horizontal stack for the poster image and movie title
+                HStack(alignment: .top, spacing: 16) {
+                    // Poster Image
+                    if let posterPath = viewModel.movie.posterPath,
+                       let url = URL(string: "https://image.tmdb.org/t/p/w500\(posterPath)") {
+                        KFImage(url)
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: 120) // Adjust width as needed
+                            .cornerRadius(8)
+                            .shadow(radius: 4)
+                            .padding(.top, -100)
+                    }
+                   
 
-                // Genre Buttons
-                if let genres = viewModel.movie.genres, !genres.isEmpty {
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        HStack {
-                            ForEach(genres, id: \.id) { genre in
-                                Button(action: {
-                                    // Action for genre button tap
-                                }) {
-                                    Text(genre.name ?? "N/A")
-                                        .padding()
-                                        .foregroundColor(.white)
-                                        .background(Color.blue)
-                                        .cornerRadius(10)
+                    // Movie Title and Genre Buttons
+                    VStack(alignment: .leading, spacing: 8) {
+                        // Movie Title
+                        Text(viewModel.movie.title ?? "N/A")
+                            .font(.title2)
+                            .fontWeight(.bold)
+
+                                            }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                }
+                .padding(.horizontal)
+
+                // Movie Overview and Details
+                VStack(alignment: .leading, spacing: 12) {
+                    // Genre Buttons
+                    if let genres = viewModel.movie.genres, !genres.isEmpty {
+                        ScrollView(.horizontal, showsIndicators: false) {
+                            HStack {
+                                ForEach(genres, id: \.id) { genre in
+                                    GenreButton(genre: genre)
                                 }
                             }
                         }
+                        .padding(.bottom)
                     }
-                }
 
-                // Movie Overview
-                VStack(alignment: .leading) {
+                    // Movie Overview
                     Text("Overview:")
                         .font(.headline)
-                        .padding(.vertical, 4)
-                    
                     Text(viewModel.movie.overview ?? "Description not available.")
                         .font(.subheadline)
+
+                    HStack {
+                       VStack(alignment: .leading) {
+                           DetailItem(title: "Release Date:", value: viewModel.movie.releaseDate ?? "N/A")
+                           DetailItem(title: "Average Rating:", value: viewModel.movie.voteAverage?.description ?? "N/A")
+                       }
+                       
+                       VStack(alignment: .leading) {
+                           DetailItem(title: "Rate Count:", value: viewModel.movie.voteCount?.description ?? "N/A")
+                           DetailItem(title: "Popularity:", value: viewModel.movie.popularity?.description ?? "N/A")
+                       }
+                   }
                 }
-                
-                HStack {
-                    VStack(alignment: .leading) {
-                        DetailItem(title: "Release Date:", value: viewModel.movie.releaseDate ?? "N/A")
-                        DetailItem(title: "Average Rating:", value: viewModel.movie.voteAverage?.description ?? "N/A")
-                    }
-                    
-                    VStack(alignment: .leading) {
-                        DetailItem(title: "Rate Count:", value: viewModel.movie.voteCount?.description ?? "N/A")
-                        DetailItem(title: "Popularity:", value: viewModel.movie.popularity?.description ?? "N/A")
-                    }
-                }
+                .padding()
             }
-            .padding()
+        }
+        .edgesIgnoringSafeArea(.top) // Allow background image to extend into the top safe area
+        .background(Color("backgroundColor"))
+    }
+
+    func getHeaderHeight(for geometry: GeometryProxy) -> CGFloat {
+        let offset = geometry.frame(in: .global).minY
+        let size = offset > 0 ? 300 + offset : 300
+        return size
+    }
+
+    func getHeaderOffset(for geometry: GeometryProxy) -> CGFloat {
+        let offset = geometry.frame(in: .global).minY
+        return offset > 0 ? -offset : 0
+    }
+}
+
+
+// Genre button view
+struct GenreButton: View {
+    let genre: Genre
+
+    var body: some View {
+        Button(action: {
+            // Action for genre button tap
+        }) {
+            Text(genre.name ?? "N/A")
+                .padding(.vertical, 4)
+                .padding(.horizontal)
+                .foregroundColor(.white)
+                .background(Color("secondaryAccentColor"))
+                .cornerRadius(16)
         }
     }
 }
 
-// Assuming Genre conforms to Identifiable by using its 'id' property
-extension Genre: Identifiable {}
-
-// Create a subview for the detail items to avoid repetition
+// Detail item view
 struct DetailItem: View {
-    var title: String
-    var value: String
+    let title: String
+    let value: String
 
     var body: some View {
         VStack(alignment: .leading) {

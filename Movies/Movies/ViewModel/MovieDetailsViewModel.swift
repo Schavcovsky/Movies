@@ -13,7 +13,6 @@ final class MovieDetailsViewModel: ObservableObject {
     private var networkManager: NetworkManager
 
     init() {
-        // Initialize an empty Result object
         movie = Result(author: nil, authorDetails: nil, adult: nil, backdropPath: nil, content: nil, createdAt: nil, genres: nil, genreIDS: nil, id: nil, originalLanguage: nil, originalTitle: nil, overview: nil, popularity: nil, posterPath: nil, releaseDate: nil, title: nil, updatedAt: nil, url: nil, video: nil, voteAverage: nil, voteCount: nil)
         networkManager = NetworkManager.shared()
     }
