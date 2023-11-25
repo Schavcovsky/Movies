@@ -78,6 +78,7 @@ struct MovieDetailsView: View {
     }
 }
 
+/*
 struct MovieDetailsView_Previews: PreviewProvider {
     static var previews: some View {
         
@@ -102,3 +103,4 @@ struct MovieDetailsView_Previews: PreviewProvider {
         MovieDetailsView(movie: sampleMovie)
     }
 }
+*/
