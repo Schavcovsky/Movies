@@ -177,6 +177,8 @@ class DashboardViewController: UIViewController, UISearchBarDelegate {
         
         decreaseButton.addTarget(self, action: #selector(decreaseButtonTapped), for: .touchUpInside)
         increaseButton.addTarget(self, action: #selector(increaseButtonTapped), for: .touchUpInside)
+        
+        updateButtonStates()
     }
     
     func layoutViews() {
@@ -268,18 +270,26 @@ class DashboardViewController: UIViewController, UISearchBarDelegate {
     }
     
     @objc func decreaseButtonTapped() {
-        guard let viewModel = viewModel, viewModel.currentPage > 1 else { return }
-        viewModel.currentPage -= 1
-        let category = viewModel.categories[viewModel.activeCategoryIndex]
-        viewModel.fetchMovies(category: category.rawValue, page: viewModel.currentPage)
-    }
+            guard let viewModel = viewModel, viewModel.currentPage > 1 else { return }
+            viewModel.currentPage -= 1
+            let category = viewModel.categories[viewModel.activeCategoryIndex]
+            viewModel.fetchMovies(category: category.rawValue, page: viewModel.currentPage)
+            updateButtonStates()
+        }
 
-    @objc func increaseButtonTapped() {
-        guard let viewModel = viewModel else { return }
-        viewModel.currentPage += 1
-        let category = viewModel.categories[viewModel.activeCategoryIndex]
-        viewModel.fetchMovies(category: category.rawValue, page: viewModel.currentPage)
-    }
+        @objc func increaseButtonTapped() {
+            guard let viewModel = viewModel else { return }
+            viewModel.currentPage += 1
+            let category = viewModel.categories[viewModel.activeCategoryIndex]
+            viewModel.fetchMovies(category: category.rawValue, page: viewModel.currentPage)
+            updateButtonStates()
+        }
+
+        // New method to update the button states
+        func updateButtonStates() {
+            decreaseButton.isEnabled = viewModel?.currentPage ?? 1 > 1
+            decreaseButton.tintColor = decreaseButton.isEnabled ? UIColor(named: "textColor") : .gray
+        }
 }
 
 extension DashboardViewController: UICollectionViewDataSource {
@@ -333,7 +343,7 @@ extension DashboardViewController: UICollectionViewDelegate {
             viewModel?.isSearchMode = false
             viewModel?.searchQuery = nil
             viewModel?.activeCategoryIndex = indexPath.item
-            viewModel?.currentPage = 1
+            viewModel?.currentPage = 1  // Since you're starting at page 1 for a new category
             
             let selectedCategory = viewModel?.categories[indexPath.item]
             viewModel?.fetchMovies(category: selectedCategory?.rawValue ?? "", page: viewModel?.currentPage ?? 1)
@@ -343,6 +353,9 @@ extension DashboardViewController: UICollectionViewDelegate {
 
             // Reload categoriesCollectionView to update selection appearance
             categoriesCollectionView.reloadData()
+
+            // Call updateButtonStates to ensure decreaseButton is updated
+            updateButtonStates()
         }
     }
 }

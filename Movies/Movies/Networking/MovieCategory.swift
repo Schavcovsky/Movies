@@ -12,7 +12,6 @@ enum MovieCategory: String {
     case popular = "movie/popular"
     case upcoming = "movie/upcoming"
 
-    // User-friendly display name
     var displayName: String {
         switch self {
             case .search: return "Search"
