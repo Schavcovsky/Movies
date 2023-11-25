@@ -49,10 +49,9 @@ class DashboardViewController: UIViewController, UISearchBarDelegate {
     let categoriesCollectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
-        layout.minimumInteritemSpacing = 8  // Set to the desired spacing
-        layout.minimumLineSpacing = 8       // Set to the desired spacing if you have multiple lines
-        layout.estimatedItemSize = UICollectionViewFlowLayout.automaticSize // Enable dynamic size if needed
-        // Set a standard item size if you prefer fixed sizes
+        layout.minimumInteritemSpacing = 8
+        layout.minimumLineSpacing = 8
+        layout.estimatedItemSize = UICollectionViewFlowLayout.automaticSize
         // layout.itemSize = CGSize(width: 100, height: 40)
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.backgroundColor = .clear
@@ -91,7 +90,7 @@ class DashboardViewController: UIViewController, UISearchBarDelegate {
         
         if let image = UIImage(named: "bi_bookmark.empty")?.withRenderingMode(.alwaysTemplate) {
             button.setImage(image, for: .normal)
-            button.tintColor = UIColor(named: "backgroundColor") // Set the desired tint color here
+            button.tintColor = UIColor(named: "backgroundColor")
         }
         button.layer.cornerRadius = 16
         
@@ -124,7 +123,7 @@ class DashboardViewController: UIViewController, UISearchBarDelegate {
             }
         }
         
-        // Fetch 'Now Playing' movies by default
+        // Fetch 'Top Rated' movies by default
         let defaultCategory = viewModel?.categories.first ?? .topRated
         viewModel?.activeCategoryIndex = viewModel?.categories.firstIndex(of: defaultCategory) ?? 0
         viewModel?.fetchMovies(category: defaultCategory.rawValue, page: viewModel?.currentPage ?? 1)
@@ -319,7 +318,6 @@ extension DashboardViewController: UICollectionViewDataSource {
         }
     }
 }
-
 
 extension DashboardViewController: UICollectionViewDelegateFlowLayout {
     
