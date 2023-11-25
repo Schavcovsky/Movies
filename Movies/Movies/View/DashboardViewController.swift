@@ -29,7 +29,7 @@ class DashboardViewController: UIViewController {
     
     let searchButton: UIButton = {
         let button = UIButton()
-        button.setImage(UIImage(systemName: "magnifyingglass"), for: .normal) // Use the system symbol for magnifying glass
+        button.setImage(UIImage(systemName: "magnifyingglass"), for: .normal)
         button.backgroundColor = UIColor(named: "secondaryAccentColor")
         button.tintColor = UIColor(named: "textColor")
         button.contentEdgeInsets = UIEdgeInsets(top: 6, left: 6, bottom: 6, right: 6)
@@ -49,12 +49,34 @@ class DashboardViewController: UIViewController {
     let categorySegmentedControl = UISegmentedControl(items: ["Top Rated", "Popular", "Action"])
     let moviesCollectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
     
+    let decreaseButton: UIButton = {
+        let button = UIButton()
+        button.setImage(UIImage(systemName: "chevron.left"), for: .normal)
+        button.backgroundColor = UIColor(named: "secondaryAccentColor")
+        button.tintColor = UIColor(named: "textColor")
+        button.contentEdgeInsets = UIEdgeInsets(top: 6, left: 6, bottom: 6, right: 6)
+        button.layer.cornerRadius = 8
+        return button
+    }()
+
+    let increaseButton: UIButton = {
+        let button = UIButton()
+        button.setImage(UIImage(systemName: "chevron.right"), for: .normal)
+        button.backgroundColor = UIColor(named: "secondaryAccentColor")
+        button.tintColor = UIColor(named: "textColor")
+        button.contentEdgeInsets = UIEdgeInsets(top: 6, left: 6, bottom: 6, right: 6)
+        button.layer.cornerRadius = 8
+        return button
+    }()
+
+    /*
     let loadMoreButton: UIButton = {
         let button = UIButton()
         button.setTitle("Load More", for: .normal)
         button.setTitleColor(UIColor(named: "textColor"), for: .normal)
         return button
     }()
+     */
     
     let watchListButton: UIButton = {
         let button = UIButton()
@@ -120,7 +142,6 @@ class DashboardViewController: UIViewController {
         moviesCollectionView.delegate = self
         
         // Configure the buttons
-        loadMoreButton.setTitle("Load More", for: .normal)
         watchListButton.setTitle("Watch List", for: .normal)
         
         // Add subviews
@@ -130,13 +151,15 @@ class DashboardViewController: UIViewController {
         view.addSubview(categoriesLabel)
         view.addSubview(categorySegmentedControl)
         view.addSubview(moviesCollectionView)
-        view.addSubview(loadMoreButton)
+        view.addSubview(decreaseButton)
+        view.addSubview(increaseButton)
         view.addSubview(watchListButton)
         
         view.backgroundColor = UIColor(named: "backgroundColor")
         moviesCollectionView.backgroundColor = .clear
         
-        loadMoreButton.addTarget(self, action: #selector(loadMoreButtonTapped), for: .touchUpInside)
+        decreaseButton.addTarget(self, action: #selector(decreaseButtonTapped), for: .touchUpInside)
+        increaseButton.addTarget(self, action: #selector(increaseButtonTapped), for: .touchUpInside)
     }
     
     func layoutViews() {
@@ -146,7 +169,8 @@ class DashboardViewController: UIViewController {
         categoriesLabel.translatesAutoresizingMaskIntoConstraints = false
         categorySegmentedControl.translatesAutoresizingMaskIntoConstraints = false
         moviesCollectionView.translatesAutoresizingMaskIntoConstraints = false
-        loadMoreButton.translatesAutoresizingMaskIntoConstraints = false
+        decreaseButton.translatesAutoresizingMaskIntoConstraints = false
+        increaseButton.translatesAutoresizingMaskIntoConstraints = false
         watchListButton.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
@@ -178,27 +202,40 @@ class DashboardViewController: UIViewController {
             moviesCollectionView.topAnchor.constraint(equalTo: categorySegmentedControl.bottomAnchor, constant: 16),
             moviesCollectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             moviesCollectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            moviesCollectionView.bottomAnchor.constraint(equalTo: loadMoreButton.topAnchor),
             
             // Assuming we want the collection view to take most of the screen, leaving space for buttons at the bottom
-            moviesCollectionView.bottomAnchor.constraint(equalTo: loadMoreButton.topAnchor, constant: -16),
+            moviesCollectionView.bottomAnchor.constraint(equalTo: decreaseButton.topAnchor, constant: -16),
             
-            // Load More Button Constraints
-            loadMoreButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            loadMoreButton.trailingAnchor.constraint(equalTo: view.centerXAnchor, constant: -5),
-            loadMoreButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -16),
-            loadMoreButton.heightAnchor.constraint(equalToConstant: 50),
+            // Decrease Button Constraints
+            decreaseButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            decreaseButton.trailingAnchor.constraint(equalTo: increaseButton.leadingAnchor, constant: -16),
+            decreaseButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -16),
+            decreaseButton.heightAnchor.constraint(equalToConstant: 50),
+            decreaseButton.widthAnchor.constraint(equalTo: watchListButton.widthAnchor, multiplier: 0.5, constant: -20),
+            
+            // Increase Button Constraints
+            increaseButton.leadingAnchor.constraint(equalTo: decreaseButton.trailingAnchor, constant: 16),
+            increaseButton.trailingAnchor.constraint(equalTo: watchListButton.leadingAnchor, constant: -16),
+            increaseButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -16),
+            increaseButton.heightAnchor.constraint(equalToConstant: 50),
+            increaseButton.widthAnchor.constraint(equalTo: watchListButton.widthAnchor, multiplier: 0.5, constant: -20),
             
             // Watch List Button Constraints - placed next to Load More button
             watchListButton.leadingAnchor.constraint(equalTo: view.centerXAnchor, constant: 5),
             watchListButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             watchListButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -16),
             watchListButton.heightAnchor.constraint(equalToConstant: 50),
-            watchListButton.widthAnchor.constraint(equalTo: loadMoreButton.widthAnchor) // Same width as Load More Button
         ])
     }
     
-    @objc func loadMoreButtonTapped() {
+    @objc func decreaseButtonTapped() {
+        viewModel?.currentPage -= 1
+        if let currentPage = viewModel?.currentPage {
+            viewModel?.fetchMovies(category: MovieCategoryTopRated, page: currentPage)
+        }
+    }
+    
+    @objc func increaseButtonTapped() {
         viewModel?.currentPage += 1
         if let currentPage = viewModel?.currentPage {
             viewModel?.fetchMovies(category: MovieCategoryTopRated, page: currentPage)
