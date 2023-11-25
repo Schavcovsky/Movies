@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Kingfisher
 
 class MovieCollectionViewCell: UICollectionViewCell {
     
@@ -91,6 +92,7 @@ class MovieCollectionViewCell: UICollectionViewCell {
         // Constants for padding and icon size
         let padding: CGFloat = 8
         let iconSize: CGFloat = 20
+        let fixedheight: CGFloat = 100
         let fixedWidth: CGFloat = 100
         
         NSLayoutConstraint.activate([
@@ -98,6 +100,7 @@ class MovieCollectionViewCell: UICollectionViewCell {
             movieImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: padding),
             movieImageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: padding),
             movieImageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -padding),
+            movieImageView.heightAnchor.constraint(equalToConstant: fixedheight),
             movieImageView.widthAnchor.constraint(equalToConstant: fixedWidth),
                         
             // Title Label Constraints
@@ -133,7 +136,11 @@ class MovieCollectionViewCell: UICollectionViewCell {
         titleLabel.text = "Title:\n" + (result.title ?? "N/A")
         releaseDateLabel.text = "Release Date:\n" + (result.releaseDate ?? "N/A")
         averageRatingLabel.text = "Average Rating:\n" + String(format: "%.1f", result.voteAverage ?? 0.0)
-        // Assuming you have a method to set the image from a URL or image name
-        //movieImageView.image = setImageFromURL(result.posterPath)
+
+        if let posterPath = result.posterPath, let url = URL(string: "https://image.tmdb.org/t/p/w500\(posterPath)") {
+            movieImageView.kf.setImage(with: url)
+        } else {
+            movieImageView.image = nil // Set a default image or leave it empty
+        }
     }
 }
