@@ -23,6 +23,13 @@ class DashboardViewModel {
     var currentPage: Int = 1
     var categories: [String] = ["Now Playing", "Popular", "Top Rated", "Upcoming"]
     
+    var activeCategoryIndex: Int = 0 {
+        didSet {
+            // Update the active category index and reload the collection view
+            self.reloadCollectionViewClosure?()
+        }
+    }
+    
     var isSearchMode: Bool = false
     var searchQuery: String?
     

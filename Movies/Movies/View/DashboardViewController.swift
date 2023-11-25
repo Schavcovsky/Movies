@@ -130,6 +130,10 @@ class DashboardViewController: UIViewController, UISearchBarDelegate {
         
         searchBar.delegate = self
         searchButton.addTarget(self, action: #selector(searchButtonTapped), for: .touchUpInside)
+        
+        let firstCategoryIndexPath = IndexPath(item: 0, section: 0)
+        categoriesCollectionView.selectItem(at: firstCategoryIndexPath, animated: false, scrollPosition: .left)
+        collectionView(categoriesCollectionView, didSelectItemAt: firstCategoryIndexPath)
     }
     
     func setupNavigationBar() {
@@ -205,8 +209,8 @@ class DashboardViewController: UIViewController, UISearchBarDelegate {
             
             // Category Collection View Constraints
             categoriesCollectionView.topAnchor.constraint(equalTo: categoriesLabel.bottomAnchor, constant: 8),
-            categoriesCollectionView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
-            categoriesCollectionView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -16),
+            categoriesCollectionView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
+            categoriesCollectionView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
             categoriesCollectionView.heightAnchor.constraint(equalToConstant: 40),
             
             // Movies Collection View Constraints
@@ -232,7 +236,7 @@ class DashboardViewController: UIViewController, UISearchBarDelegate {
             increaseButton.widthAnchor.constraint(equalTo: watchListButton.widthAnchor, multiplier: 0.5, constant: -20),
             
             // Watch List Button Constraints - placed next to Load More button
-            watchListButton.leadingAnchor.constraint(equalTo: view.centerXAnchor, constant: 5),
+            watchListButton.leadingAnchor.constraint(equalTo: view.centerXAnchor),
             watchListButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             watchListButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -16),
             watchListButton.heightAnchor.constraint(equalToConstant: 50),
@@ -312,9 +316,21 @@ extension DashboardViewController: UICollectionViewDelegateFlowLayout {
 }
 
 extension DashboardViewController: UICollectionViewDelegate {
+    
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         if collectionView == categoriesCollectionView {
             let selectedCategory = viewModel?.categories[indexPath.item]
+            viewModel?.activeCategoryIndex = indexPath.item
+
+            collectionView.visibleCells.forEach { cell in
+                if let categoryCell = cell as? CategoryCollectionViewCell {
+                    categoryCell.isActive = false
+                }
+            }
+            if let cell = collectionView.cellForItem(at: indexPath) as? CategoryCollectionViewCell {
+                cell.isActive = true
+            }
+
             viewModel?.fetchMovies(category: selectedCategory ?? "", page: 1)
         }
     }
