@@ -9,18 +9,18 @@ import SwiftUI
 import Kingfisher
 
 struct MovieDetailsView: View {
-    let movie: Result
-    
+    @StateObject var viewModel = MovieDetailsViewModel()
+
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 10) {
                 // Movie Banner Image
-                KFImage(URL(string: "https://image.tmdb.org/t/p/w500\(movie.backdropPath ?? "")"))
+                KFImage(URL(string: "https://image.tmdb.org/t/p/w500\(viewModel.movie.backdropPath ?? "")"))
                     .resizable()
                     .aspectRatio(contentMode: .fit)
 
                 // Movie Title
-                Text(movie.title ?? "N/A")
+                Text(viewModel.movie.title ?? "N/A")
                     .font(.title)
                     .fontWeight(.bold)
 
@@ -44,7 +44,7 @@ struct MovieDetailsView: View {
                         .font(.headline)
                         .padding(.vertical, 4)
                     
-                    Text(movie.overview ?? "Description not available.")
+                    Text(viewModel.movie.overview ?? "Description not available.")
                         .font(.subheadline)
                 }
                 
@@ -53,7 +53,7 @@ struct MovieDetailsView: View {
                     VStack(alignment: .leading) {
                         Text("Release Date:")
                             .bold()
-                        Text(movie.releaseDate ?? "N/A")
+                        Text(viewModel.movie.releaseDate ?? "N/A")
                     }
                     
                     Spacer()
@@ -61,7 +61,7 @@ struct MovieDetailsView: View {
                     VStack(alignment: .leading) {
                         Text("Average Rating:")
                             .bold()
-                        Text("\(movie.voteAverage?.description ?? "N/A")")
+                        Text("\(viewModel.movie.voteAverage?.description ?? "N/A")")
                     }
                     
                     Spacer()
@@ -69,7 +69,7 @@ struct MovieDetailsView: View {
                     VStack(alignment: .leading) {
                         Text("Rate Count:")
                             .bold()
-                        Text("\(movie.voteCount?.description ?? "N/A")")
+                        Text("\(viewModel.movie.voteCount?.description ?? "N/A")")
                     }
                 }
             }

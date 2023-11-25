@@ -45,7 +45,7 @@ class DashboardViewModel {
     
     // Fetching movies
     func fetchMovies(category: String, page: Int) {
-        let searchCategory = isSearchMode ? MovieCategorySearch : category
+        let searchCategory = isSearchMode ? MovieSearch : category
         networkManager.fetchMovies(forCategory: searchCategory, query: searchQuery ?? "", page: page) { [weak self] (data, error) in
             guard let self = self else { return }
             
@@ -75,7 +75,7 @@ class DashboardViewModel {
     func searchMovies(query: String, page: Int) {
         isSearchMode = true
         searchQuery = query
-        networkManager.fetchMovies(forCategory: MovieCategorySearch, query: query, page: page) { [weak self] (data, error) in
+        networkManager.fetchMovies(forCategory: MovieSearch, query: query, page: page) { [weak self] (data, error) in
             guard let self = self else { return }
             
             if let error = error {

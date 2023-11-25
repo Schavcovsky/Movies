@@ -337,7 +337,7 @@ extension DashboardViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         if collectionView == moviesCollectionView {
             if let movie = viewModel?.movies[indexPath.item] {
-                let detailsView = MovieDetailsView(movie: movie)
+                let detailsView = MovieDetailsView()
                 let hostingController = UIHostingController(rootView: detailsView)
                 self.navigationController?.pushViewController(hostingController, animated: true)
             }
