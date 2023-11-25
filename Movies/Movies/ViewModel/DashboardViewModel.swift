@@ -21,7 +21,7 @@ class DashboardViewModel {
     }
     
     var currentPage: Int = 1
-    var categories: [String] = ["Now Playing", "Popular", "Top Rated", "Upcoming"]
+    var categories: [MovieCategory] = [.nowPlaying, .popular, .topRated, .upcoming]
     
     var activeCategoryIndex: Int = 0 {
         didSet {
@@ -45,7 +45,8 @@ class DashboardViewModel {
     
     // Fetching movies
     func fetchMovies(category: String, page: Int) {
-        networkManager.fetchMovies(forCategory: category, query: "", page: page) { [weak self] (data, error) in
+        let searchCategory = isSearchMode ? MovieCategorySearch : category
+        networkManager.fetchMovies(forCategory: searchCategory, query: searchQuery ?? "", page: page) { [weak self] (data, error) in
             guard let self = self else { return }
 
             if let error = error {

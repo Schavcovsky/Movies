@@ -27,12 +27,16 @@ NSString * const MovieCategoryUpcoming = @"movie/upcoming";
 
 - (void)fetchMoviesForCategory:(NSString *)category query:(NSString *)query page:(NSInteger)page withCompletion:(void (^)(NSData * _Nullable data, NSError * _Nullable error))completion {
     NSString *encodedQuery = [query stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
+
     NSString *urlString;
     if ([category isEqualToString:MovieCategorySearch]) {
-        urlString = [NSString stringWithFormat:@"%@%@&page=%ld&include_adult=false&language=en-US", [self baseUrlForCategory:category], encodedQuery, (long)page];
+        urlString = [NSString stringWithFormat:@"%@%@&page=%ld", [self baseUrlForCategory:category], encodedQuery, (long)page];
     } else {
         urlString = [self urlStringForCategory:category page:page];
     }
+
+    NSLog(@"URL being accessed: %@", urlString); // Log for debugging
+
     NSURL *url = [NSURL URLWithString:urlString];
     
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
@@ -54,9 +58,13 @@ NSString * const MovieCategoryUpcoming = @"movie/upcoming";
 
 - (NSString *)urlStringForCategory:(NSString *)category page:(NSInteger)page {
     NSString *baseUrl = [self baseUrlForCategory:category];
-    return [NSString stringWithFormat:@"%@&page=%ld", baseUrl, (long)page];
+    if (![baseUrl isEqualToString:@""]) {
+        return [NSString stringWithFormat:@"%@&page=%ld", baseUrl, (long)page];
+    } else {
+        NSLog(@"Base URL is empty for category: %@", category);
+        return @"";
+    }
 }
-
 
 - (NSString *)baseUrlForCategory:(NSString *)category {
     if ([category isEqualToString:MovieCategorySearch]) {

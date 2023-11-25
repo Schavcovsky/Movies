@@ -67,7 +67,7 @@
 		037520992B11B5B800B8F56A /* CategoryCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryCollectionViewCell.swift; sourceTree = "<group>"; };
 		03AC64602B116A6B004BAE18 /* MovieCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieCollectionViewCell.swift; sourceTree = "<group>"; };
 		03AC64702B1174CC004BAE18 /* Movie.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Movie.swift; sourceTree = "<group>"; };
-		03AC64722B11788E004BAE18 /* MovieCategory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieCategory.swift; sourceTree = "<group>"; };
+		03AC64722B11788E004BAE18 /* MovieCategory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = MovieCategory.swift; path = ../Networking/MovieCategory.swift; sourceTree = "<group>"; };
 		19438673B97A1590669B99E7 /* Pods_Movies_MoviesUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Movies_MoviesUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		3747FF0C741CA1E302190D27 /* Pods-MoviesTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MoviesTests.debug.xcconfig"; path = "Target Support Files/Pods-MoviesTests/Pods-MoviesTests.debug.xcconfig"; sourceTree = "<group>"; };
 		B61B8FB5F4D335831CDAFA72 /* Pods-Movies.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Movies.release.xcconfig"; path = "Target Support Files/Pods-Movies/Pods-Movies.release.xcconfig"; sourceTree = "<group>"; };
@@ -184,7 +184,6 @@
 				036828EF2B11558F00C4BFC9 /* NetworkManager.h */,
 				036828E82B1151ED00C4BFC9 /* Movies-Bridging-Header.h */,
 				036828E92B1151ED00C4BFC9 /* NetworkManager.m */,
-				03AC64722B11788E004BAE18 /* MovieCategory.swift */,
 			);
 			path = Networking;
 			sourceTree = "<group>";
@@ -211,6 +210,7 @@
 			isa = PBXGroup;
 			children = (
 				03AC64702B1174CC004BAE18 /* Movie.swift */,
+				03AC64722B11788E004BAE18 /* MovieCategory.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";

@@ -114,7 +114,7 @@ class DashboardViewController: UIViewController, UISearchBarDelegate {
         setupViews()
         layoutViews()
         setupNavigationBar()
-        
+
         // Initialize ViewModel
         viewModel = DashboardViewModel(networkManager: NetworkManager.shared())
 
@@ -125,12 +125,15 @@ class DashboardViewController: UIViewController, UISearchBarDelegate {
             }
         }
 
-        // Fetch top-rated movies
-        viewModel?.fetchMovies(category: MovieCategoryTopRated, page: viewModel?.currentPage ?? 1)
-        
+        // Fetch 'Now Playing' movies by default
+        let defaultCategory = viewModel?.categories.first ?? .nowPlaying
+        viewModel?.activeCategoryIndex = viewModel?.categories.firstIndex(of: defaultCategory) ?? 0
+        viewModel?.fetchMovies(category: defaultCategory.rawValue, page: viewModel?.currentPage ?? 1)
+
         searchBar.delegate = self
         searchButton.addTarget(self, action: #selector(searchButtonTapped), for: .touchUpInside)
-        
+
+        // Select 'Now Playing' category in the categoriesCollectionView
         let firstCategoryIndexPath = IndexPath(item: 0, section: 0)
         categoriesCollectionView.selectItem(at: firstCategoryIndexPath, animated: false, scrollPosition: .left)
         collectionView(categoriesCollectionView, didSelectItemAt: firstCategoryIndexPath)
@@ -248,6 +251,9 @@ class DashboardViewController: UIViewController, UISearchBarDelegate {
         viewModel?.searchQuery = query
         viewModel?.isSearchMode = true
         viewModel?.searchMovies(query: query, page: viewModel?.currentPage ?? 1)
+
+        // Reload categoriesCollectionView to reflect no selection
+        categoriesCollectionView.reloadData()
     }
 
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
@@ -256,20 +262,23 @@ class DashboardViewController: UIViewController, UISearchBarDelegate {
         viewModel?.searchQuery = query
         viewModel?.isSearchMode = true
         viewModel?.searchMovies(query: query, page: viewModel?.currentPage ?? 1)
+
+        // Reload categoriesCollectionView to reflect no selection
+        categoriesCollectionView.reloadData()
     }
     
     @objc func decreaseButtonTapped() {
-        viewModel?.currentPage -= 1
-        if let currentPage = viewModel?.currentPage {
-            viewModel?.fetchMovies(category: MovieCategoryTopRated, page: currentPage)
-        }
+        guard let viewModel = viewModel, viewModel.currentPage > 1 else { return }
+        viewModel.currentPage -= 1
+        let category = viewModel.categories[viewModel.activeCategoryIndex]
+        viewModel.fetchMovies(category: category.rawValue, page: viewModel.currentPage)
     }
-    
+
     @objc func increaseButtonTapped() {
-        viewModel?.currentPage += 1
-        if let currentPage = viewModel?.currentPage {
-            viewModel?.fetchMovies(category: MovieCategoryTopRated, page: currentPage)
-        }
+        guard let viewModel = viewModel else { return }
+        viewModel.currentPage += 1
+        let category = viewModel.categories[viewModel.activeCategoryIndex]
+        viewModel.fetchMovies(category: category.rawValue, page: viewModel.currentPage)
     }
 }
 
@@ -284,24 +293,26 @@ extension DashboardViewController: UICollectionViewDataSource {
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        if collectionView == categoriesCollectionView {
+            if collectionView == categoriesCollectionView {
                 let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "CategoryCell", for: indexPath) as! CategoryCollectionViewCell
-                let category = viewModel?.categories[indexPath.item] ?? ""
-                cell.configure(with: category)
+                let category = viewModel?.categories[indexPath.item]
+                cell.configure(with: category?.displayName ?? "")
+
+                // Directly use the isActive property to set the cell appearance based on selection
+                cell.isActive = viewModel?.isSearchMode == false && indexPath.item == viewModel?.activeCategoryIndex
+
                 return cell
             } else {
-            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "MovieCell", for: indexPath) as? MovieCollectionViewCell else {
-                fatalError("Unable to dequeue MovieCollectionViewCell")
+                // Handle the cells for moviesCollectionView
+                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "MovieCell", for: indexPath) as! MovieCollectionViewCell
+                if let movie = viewModel?.movie(at: indexPath) {
+                    cell.configure(with: movie)
+                }
+                return cell
             }
-
-            if let movie = viewModel?.movie(at: indexPath) as? Result {
-                cell.configure(with: movie)
-            }
-            
-            return cell
         }
-    }
 }
+
 
 extension DashboardViewController: UICollectionViewDelegateFlowLayout {
     
@@ -319,19 +330,19 @@ extension DashboardViewController: UICollectionViewDelegate {
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         if collectionView == categoriesCollectionView {
-            let selectedCategory = viewModel?.categories[indexPath.item]
+            viewModel?.isSearchMode = false
+            viewModel?.searchQuery = nil
             viewModel?.activeCategoryIndex = indexPath.item
+            viewModel?.currentPage = 1
+            
+            let selectedCategory = viewModel?.categories[indexPath.item]
+            viewModel?.fetchMovies(category: selectedCategory?.rawValue ?? "", page: viewModel?.currentPage ?? 1)
 
-            collectionView.visibleCells.forEach { cell in
-                if let categoryCell = cell as? CategoryCollectionViewCell {
-                    categoryCell.isActive = false
-                }
-            }
-            if let cell = collectionView.cellForItem(at: indexPath) as? CategoryCollectionViewCell {
-                cell.isActive = true
-            }
+            searchBar.text = ""
+            searchBar.resignFirstResponder()
 
-            viewModel?.fetchMovies(category: selectedCategory ?? "", page: 1)
+            // Reload categoriesCollectionView to update selection appearance
+            categoriesCollectionView.reloadData()
         }
     }
 }
