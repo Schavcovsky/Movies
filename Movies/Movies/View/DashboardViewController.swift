@@ -126,7 +126,7 @@ class DashboardViewController: UIViewController, UISearchBarDelegate {
         }
 
         // Fetch 'Now Playing' movies by default
-        let defaultCategory = viewModel?.categories.first ?? .nowPlaying
+        let defaultCategory = viewModel?.categories.first ?? .topRated
         viewModel?.activeCategoryIndex = viewModel?.categories.firstIndex(of: defaultCategory) ?? 0
         viewModel?.fetchMovies(category: defaultCategory.rawValue, page: viewModel?.currentPage ?? 1)
 

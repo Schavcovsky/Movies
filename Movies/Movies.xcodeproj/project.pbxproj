@@ -181,8 +181,8 @@
 		036828E22B105FC400C4BFC9 /* Networking */ = {
 			isa = PBXGroup;
 			children = (
-				036828EF2B11558F00C4BFC9 /* NetworkManager.h */,
 				036828E82B1151ED00C4BFC9 /* Movies-Bridging-Header.h */,
+				036828EF2B11558F00C4BFC9 /* NetworkManager.h */,
 				036828E92B1151ED00C4BFC9 /* NetworkManager.m */,
 			);
 			path = Networking;

@@ -69,10 +69,10 @@ NSString * const MovieCategoryUpcoming = @"movie/upcoming";
 - (NSString *)baseUrlForCategory:(NSString *)category {
     if ([category isEqualToString:MovieCategorySearch]) {
         return @"https://api.themoviedb.org/3/search/movie?query=";
-    } else if ([category isEqualToString:MovieCategoryNowPlaying]) {
-        return @"https://api.themoviedb.org/3/movie/now_playing?language=en-US&page=";
     } else if ([category isEqualToString:MovieCategoryPopular]) {
         return @"https://api.themoviedb.org/3/movie/popular?language=en-US&page=";
+    } else if ([category isEqualToString:MovieCategoryNowPlaying]) {
+        return @"https://api.themoviedb.org/3/movie/now_playing?language=en-US&page=";
     } else if ([category isEqualToString:MovieCategoryTopRated]) {
         return @"https://api.themoviedb.org/3/movie/top_rated?language=en-US&page=";
     } else if ([category isEqualToString:MovieCategoryUpcoming]) {

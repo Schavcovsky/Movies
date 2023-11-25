@@ -21,7 +21,7 @@ class DashboardViewModel {
     }
     
     var currentPage: Int = 1
-    var categories: [MovieCategory] = [.nowPlaying, .popular, .topRated, .upcoming]
+    var categories: [MovieCategory] = [.topRated, .nowPlaying, .popular, .upcoming]
     
     var activeCategoryIndex: Int = 0 {
         didSet {
