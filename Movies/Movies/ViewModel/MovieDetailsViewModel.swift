@@ -19,24 +19,46 @@ final class MovieDetailsViewModel: ObservableObject {
     }
 
     func fetchMovieDetails(movieId: Int) {
-        isLoading = true
+        DispatchQueue.main.async {
+            self.isLoading = true
+        }
         networkManager.fetchMovieDetails(forId: movieId) { [weak self] data, error in
-            self?.isLoading = false
-            guard let self = self else { return }
+            DispatchQueue.main.async {
+                self?.isLoading = false
+                guard let self = self else { return }
 
-            // Handle the response
-            // Parse data and update movie property
+                if let error = error {
+                    print("Error fetching movie details: \(error.localizedDescription)")
+                    return
+                }
+
+                guard let data = data else {
+                    print("No data received for movie details")
+                    return
+                }
+
+                do {
+                    let details = try JSONDecoder().decode(Result.self, from: data)
+                    self.movie = details
+                } catch {
+                    print("Error decoding movie details: \(error)")
+                }
+            }
         }
     }
 
     func fetchMovieRatings(movieId: Int, pageNumber: Int) {
-        isLoading = true
+        DispatchQueue.main.async {
+            self.isLoading = true
+        }
         networkManager.fetchMovieRatings(forId: movieId, page: pageNumber) { [weak self] data, error in
-            self?.isLoading = false
-            guard let self = self else { return }
+            DispatchQueue.main.async {
+                self?.isLoading = false
+                guard let self = self else { return }
 
-            // Handle the response
-            // Parse data and update relevant properties
+                // Handle the response
+                // Parse data and update relevant properties
+            }
         }
     }
 }

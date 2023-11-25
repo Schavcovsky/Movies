@@ -9,7 +9,7 @@ import SwiftUI
 import Kingfisher
 
 struct MovieDetailsView: View {
-    @StateObject var viewModel = MovieDetailsViewModel()
+    @ObservedObject var viewModel: MovieDetailsViewModel
 
     var body: some View {
         ScrollView {
@@ -24,16 +24,21 @@ struct MovieDetailsView: View {
                     .font(.title)
                     .fontWeight(.bold)
 
-                // Action Buttons (Placeholder for actual actions)
-                HStack {
-                    ForEach(0..<4, id: \.self) { _ in
-                        Button(action: {}) {
-                            Text("Action")
-                                .frame(minWidth: 0, maxWidth: .infinity)
-                                .padding()
-                                .foregroundColor(.white)
-                                .background(Color.blue)
-                                .cornerRadius(10)
+                // Genre Buttons
+                if let genres = viewModel.movie.genres, !genres.isEmpty {
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack {
+                            ForEach(genres, id: \.id) { genre in
+                                Button(action: {
+                                    // Action for genre button tap
+                                }) {
+                                    Text(genre.name ?? "N/A")
+                                        .padding()
+                                        .foregroundColor(.white)
+                                        .background(Color.blue)
+                                        .cornerRadius(10)
+                                }
+                            }
                         }
                     }
                 }
@@ -48,32 +53,36 @@ struct MovieDetailsView: View {
                         .font(.subheadline)
                 }
                 
-                // Other movie details like release date, rating, etc.
                 HStack {
                     VStack(alignment: .leading) {
-                        Text("Release Date:")
-                            .bold()
-                        Text(viewModel.movie.releaseDate ?? "N/A")
+                        DetailItem(title: "Release Date:", value: viewModel.movie.releaseDate ?? "N/A")
+                        DetailItem(title: "Average Rating:", value: viewModel.movie.voteAverage?.description ?? "N/A")
                     }
                     
-                    Spacer()
-                    
                     VStack(alignment: .leading) {
-                        Text("Average Rating:")
-                            .bold()
-                        Text("\(viewModel.movie.voteAverage?.description ?? "N/A")")
-                    }
-                    
-                    Spacer()
-                    
-                    VStack(alignment: .leading) {
-                        Text("Rate Count:")
-                            .bold()
-                        Text("\(viewModel.movie.voteCount?.description ?? "N/A")")
+                        DetailItem(title: "Rate Count:", value: viewModel.movie.voteCount?.description ?? "N/A")
+                        DetailItem(title: "Popularity:", value: viewModel.movie.popularity?.description ?? "N/A")
                     }
                 }
             }
             .padding()
+        }
+    }
+}
+
+// Assuming Genre conforms to Identifiable by using its 'id' property
+extension Genre: Identifiable {}
+
+// Create a subview for the detail items to avoid repetition
+struct DetailItem: View {
+    var title: String
+    var value: String
+
+    var body: some View {
+        VStack(alignment: .leading) {
+            Text(title)
+                .bold()
+            Text(value)
         }
     }
 }

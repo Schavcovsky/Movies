@@ -336,11 +336,14 @@ extension DashboardViewController: UICollectionViewDelegate {
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         if collectionView == moviesCollectionView {
-            if let movie = viewModel?.movies[indexPath.item] {
-                let detailsView = MovieDetailsView()
-                let hostingController = UIHostingController(rootView: detailsView)
-                self.navigationController?.pushViewController(hostingController, animated: true)
-            }
+            guard let movieId = viewModel?.movies[indexPath.item].id else { return }
+                    
+            let movieDetailsViewModel = MovieDetailsViewModel()
+            movieDetailsViewModel.fetchMovieDetails(movieId: movieId)
+
+            let detailsView = MovieDetailsView(viewModel: movieDetailsViewModel)
+            let hostingController = UIHostingController(rootView: detailsView)
+            self.navigationController?.pushViewController(hostingController, animated: true)
         } else {
             viewModel?.isSearchMode = false
             viewModel?.searchQuery = nil

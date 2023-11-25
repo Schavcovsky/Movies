@@ -1,15 +1,6 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
-    "%@" : {
-
-    },
-    "Action" : {
-
-    },
-    "Average Rating:" : {
-
-    },
     "Dashboard_Title" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -28,12 +19,6 @@
       }
     },
     "Overview:" : {
-
-    },
-    "Rate Count:" : {
-
-    },
-    "Release Date:" : {
 
     }
   },
