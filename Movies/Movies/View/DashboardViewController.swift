@@ -60,7 +60,6 @@ class DashboardViewController: UIViewController, UISearchBarDelegate {
         return collectionView
     }()
     
-    
     let moviesCollectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
     
     let decreaseButton: UIButton = {
@@ -204,10 +203,11 @@ class DashboardViewController: UIViewController, UISearchBarDelegate {
             searchBar.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 8),
             searchBar.trailingAnchor.constraint(equalTo: searchButton.leadingAnchor, constant: -8),
             
+            // Search Button Constraints
             searchButton.centerYAnchor.constraint(equalTo: searchBar.centerYAnchor),
             searchButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             
-            //
+            // Category Label View Constraints
             categoriesLabel.topAnchor.constraint(equalTo: searchBar.bottomAnchor, constant: 16),
             categoriesLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             categoriesLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
@@ -222,8 +222,6 @@ class DashboardViewController: UIViewController, UISearchBarDelegate {
             moviesCollectionView.topAnchor.constraint(equalTo: categoriesCollectionView.bottomAnchor, constant: 16),
             moviesCollectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             moviesCollectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            
-            // Assuming we want the collection view to take most of the screen, leaving space for buttons at the bottom
             moviesCollectionView.bottomAnchor.constraint(equalTo: decreaseButton.topAnchor, constant: -16),
             
             // Decrease Button Constraints
@@ -240,7 +238,7 @@ class DashboardViewController: UIViewController, UISearchBarDelegate {
             increaseButton.heightAnchor.constraint(equalToConstant: 50),
             increaseButton.widthAnchor.constraint(equalTo: watchListButton.widthAnchor, multiplier: 0.5, constant: -20),
             
-            // Watch List Button Constraints - placed next to Load More button
+            // Watch List Button Constraints
             watchListButton.leadingAnchor.constraint(equalTo: view.centerXAnchor),
             watchListButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             watchListButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -16),
