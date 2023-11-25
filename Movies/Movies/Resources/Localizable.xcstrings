@@ -1,6 +1,9 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "%@ has no reviews." : {
+
+    },
     "Dashboard_Title" : {
       "extractionState" : "manual",
       "localizations" : {
