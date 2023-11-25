@@ -48,16 +48,18 @@ class MovieCollectionViewCell: UICollectionViewCell {
     
     private let checkmarkButton: UIButton = {
         let button = UIButton()
-        let configuration = UIImage.SymbolConfiguration(pointSize: 20, weight: .regular)
-        button.setImage(UIImage(named: "bi_bookmark.empty", in: nil, with: configuration), for: .normal)
+        let image = UIImage(named: "bi_bookmark.empty")
+        let tintedImage = image?.withTintColor(UIColor(named: "secondaryAccentColor")!, renderingMode: .alwaysOriginal)
+        button.setImage(tintedImage, for: .normal)
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
     
     private let starRatingButton: UIButton = {
         let button = UIButton()
-        let configuration = UIImage.SymbolConfiguration(pointSize: 20, weight: .regular)
-        button.setImage(UIImage(named: "clarity_star.empty", in: nil, with: configuration), for: .normal)
+        let image = UIImage(named: "clarity_star.empty")
+        let tintedImage = image?.withTintColor(UIColor(named: "secondaryAccentColor")!, renderingMode: .alwaysOriginal)
+        button.setImage(tintedImage, for: .normal)
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()

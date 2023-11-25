@@ -200,8 +200,8 @@
 			isa = PBXGroup;
 			children = (
 				030C9FCE2B101B480039E04A /* DashboardViewController.swift */,
-				03AC64602B116A6B004BAE18 /* MovieCollectionViewCell.swift */,
 				037520992B11B5B800B8F56A /* CategoryCollectionViewCell.swift */,
+				03AC64602B116A6B004BAE18 /* MovieCollectionViewCell.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
