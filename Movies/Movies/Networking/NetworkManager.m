@@ -27,32 +27,32 @@ NSString * const MovieCategoryUpcoming = @"movie/upcoming";
 
 - (void)fetchMoviesForCategory:(NSString *)category query:(NSString *)query page:(NSInteger)page withCompletion:(void (^)(NSData * _Nullable data, NSError * _Nullable error))completion {
     NSString *encodedQuery = [query stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
-
+    
     NSString *urlString;
     if ([category isEqualToString:MovieCategorySearch]) {
         urlString = [NSString stringWithFormat:@"%@%@&page=%ld", [self baseUrlForCategory:category], encodedQuery, (long)page];
     } else {
         urlString = [self urlStringForCategory:category page:page];
     }
-
+    
     NSLog(@"URL being accessed: %@", urlString); // Log for debugging
-
+    
     NSURL *url = [NSURL URLWithString:urlString];
     
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
     [request setValue:@"Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJlMjFkMmRjNzI3ZDgyZmIwYWI1ODkwNzcyNTdiZDZlMSIsInN1YiI6IjY1NWViYmJjODNlZTY3MDFmNjI1OTcyNSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.tr7hmR8OjjOOn3Byu6LG8ykJPvtddeN5F6DJC3MpoGU" forHTTPHeaderField:@"Authorization"];
     [request setValue:@"application/json" forHTTPHeaderField:@"Accept"];
     [request setHTTPMethod:@"GET"];
-
+    
     NSURLSessionDataTask *task = [[NSURLSession sharedSession] dataTaskWithRequest:request completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
         if (error) {
             completion(nil, error);
             return;
         }
-
+        
         completion(data, nil);
     }];
-
+    
     [task resume];
 }
 
