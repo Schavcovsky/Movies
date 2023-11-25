@@ -21,6 +21,7 @@ class DashboardViewModel {
     }
     
     var currentPage: Int = 1
+    var categories: [String] = ["Now Playing", "Popular", "Top Rated", "Upcoming"]
     
     var isSearchMode: Bool = false
     var searchQuery: String?

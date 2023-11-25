@@ -46,7 +46,21 @@ class DashboardViewController: UIViewController, UISearchBarDelegate {
         return label
     }()
     
-    let categorySegmentedControl = UISegmentedControl(items: ["Top Rated", "Popular", "Action"])
+    let categoriesCollectionView: UICollectionView = {
+        let layout = UICollectionViewFlowLayout()
+        layout.scrollDirection = .horizontal
+        layout.minimumInteritemSpacing = 8  // Set to the desired spacing
+        layout.minimumLineSpacing = 8       // Set to the desired spacing if you have multiple lines
+        layout.estimatedItemSize = UICollectionViewFlowLayout.automaticSize // Enable dynamic size if needed
+        // Set a standard item size if you prefer fixed sizes
+        // layout.itemSize = CGSize(width: 100, height: 40)
+        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        collectionView.backgroundColor = .clear
+        collectionView.showsHorizontalScrollIndicator = false
+        return collectionView
+    }()
+
+
     let moviesCollectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
     
     let decreaseButton: UIButton = {
@@ -127,9 +141,11 @@ class DashboardViewController: UIViewController, UISearchBarDelegate {
         // Configure the search bar
         searchBar.placeholder = "Search Here ..."
         
-        // Configure the segmented control
-        categorySegmentedControl.selectedSegmentIndex = 0
-        
+        // Configure the Categories collection view
+        categoriesCollectionView.register(CategoryCollectionViewCell.self, forCellWithReuseIdentifier: "CategoryCell")
+        categoriesCollectionView.dataSource = self
+        categoriesCollectionView.delegate = self
+
         // Configure the collection view
         moviesCollectionView.register(MovieCollectionViewCell.self, forCellWithReuseIdentifier: "MovieCell")
         moviesCollectionView.dataSource = self
@@ -143,7 +159,7 @@ class DashboardViewController: UIViewController, UISearchBarDelegate {
         view.addSubview(searchBar)
         view.addSubview(searchButton)
         view.addSubview(categoriesLabel)
-        view.addSubview(categorySegmentedControl)
+        view.addSubview(categoriesCollectionView)
         view.addSubview(moviesCollectionView)
         view.addSubview(decreaseButton)
         view.addSubview(increaseButton)
@@ -161,7 +177,7 @@ class DashboardViewController: UIViewController, UISearchBarDelegate {
         searchBar.translatesAutoresizingMaskIntoConstraints = false
         searchButton.translatesAutoresizingMaskIntoConstraints = false
         categoriesLabel.translatesAutoresizingMaskIntoConstraints = false
-        categorySegmentedControl.translatesAutoresizingMaskIntoConstraints = false
+        categoriesCollectionView.translatesAutoresizingMaskIntoConstraints = false
         moviesCollectionView.translatesAutoresizingMaskIntoConstraints = false
         decreaseButton.translatesAutoresizingMaskIntoConstraints = false
         increaseButton.translatesAutoresizingMaskIntoConstraints = false
@@ -187,13 +203,14 @@ class DashboardViewController: UIViewController, UISearchBarDelegate {
             categoriesLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             categoriesLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             
-            // Category Segmented Control Constraints
-            categorySegmentedControl.topAnchor.constraint(equalTo: categoriesLabel.bottomAnchor, constant: 16),
-            categorySegmentedControl.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            categorySegmentedControl.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            // Category Collection View Constraints
+            categoriesCollectionView.topAnchor.constraint(equalTo: categoriesLabel.bottomAnchor, constant: 8),
+            categoriesCollectionView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
+            categoriesCollectionView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -16),
+            categoriesCollectionView.heightAnchor.constraint(equalToConstant: 40),
             
             // Movies Collection View Constraints
-            moviesCollectionView.topAnchor.constraint(equalTo: categorySegmentedControl.bottomAnchor, constant: 16),
+            moviesCollectionView.topAnchor.constraint(equalTo: categoriesCollectionView.bottomAnchor, constant: 16),
             moviesCollectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             moviesCollectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             
@@ -255,19 +272,30 @@ class DashboardViewController: UIViewController, UISearchBarDelegate {
 extension DashboardViewController: UICollectionViewDataSource {
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return viewModel?.movies.count ?? 0
+        if collectionView == categoriesCollectionView {
+            return viewModel?.categories.count ?? 0
+        } else {
+            return viewModel?.movies.count ?? 0
+        }
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "MovieCell", for: indexPath) as? MovieCollectionViewCell else {
-            fatalError("Unable to dequeue MovieCollectionViewCell")
-        }
+        if collectionView == categoriesCollectionView {
+                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "CategoryCell", for: indexPath) as! CategoryCollectionViewCell
+                let category = viewModel?.categories[indexPath.item] ?? ""
+                cell.configure(with: category)
+                return cell
+            } else {
+            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "MovieCell", for: indexPath) as? MovieCollectionViewCell else {
+                fatalError("Unable to dequeue MovieCollectionViewCell")
+            }
 
-        if let movie = viewModel?.movie(at: indexPath) as? Result {
-            cell.configure(with: movie)
+            if let movie = viewModel?.movie(at: indexPath) as? Result {
+                cell.configure(with: movie)
+            }
+            
+            return cell
         }
-        
-        return cell
     }
 }
 
@@ -280,5 +308,14 @@ extension DashboardViewController: UICollectionViewDelegateFlowLayout {
         let height: CGFloat = 120
         
         return CGSize(width: width, height: height)
+    }
+}
+
+extension DashboardViewController: UICollectionViewDelegate {
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        if collectionView == categoriesCollectionView {
+            let selectedCategory = viewModel?.categories[indexPath.item]
+            viewModel?.fetchMovies(category: selectedCategory ?? "", page: 1)
+        }
     }
 }
