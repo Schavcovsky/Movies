@@ -26,6 +26,9 @@
     },
     "Overview:" : {
 
+    },
+    "Rating: %lld/10" : {
+
     }
   },
   "version" : "1.0"

@@ -134,13 +134,11 @@ struct MovieDetailsView: View {
                 ProgressView()
                 Spacer()
             } else {
-                if let overview = viewModel.movie.overview, overview != "" {
-                    Text("Overview:")
-                        .font(.headline)
-                    
-                    Text(overview)
-                        .font(.subheadline)
-                }
+                Text("Overview:")
+                    .font(.headline)
+                
+                Text(viewModel.movie.overview ?? "No over")
+                    .font(.subheadline)
                 
                 HStack {
                     VStack(alignment: .leading) {
@@ -172,7 +170,38 @@ struct MovieDetailsView: View {
                 } else {
                     ForEach(viewModel.reviews, id: \.id) { review in
                         VStack(alignment: .leading, spacing: 4) {
-                            // ... Review content
+                            HStack {
+                                if let avatarPath = review.authorDetails?.avatarPath,
+                                   let url = URL(string: "https://image.tmdb.org/t/p/w500\(avatarPath)") {
+                                    KFImage(url)
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fill)
+                                        .frame(width: 50, height: 50)
+                                        .clipShape(Circle())
+                                } else {
+                                    Image(systemName: "person.fill")
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fill)
+                                        .frame(width: 50, height: 50)
+                                        .background(Color.gray)
+                                        .clipShape(Circle())
+                                }
+                                
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text(review.author ?? "Unknown Author")
+                                        .font(.headline)
+                                    if let rating = review.authorDetails?.rating {
+                                        Text("Rating: \(rating)/10")
+                                            .font(.subheadline)
+                                    }
+                                }
+                            }
+                            
+                            Text(review.content ?? "")
+                                .font(.body)
+                                .padding(.top, 8)
+                            
+                            Divider()
                         }
                     }
                 }
