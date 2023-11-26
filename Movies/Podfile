@@ -6,8 +6,7 @@ target 'Movies' do
   use_frameworks!
 
   # Pods for Movies
-  pod 'Kingfisher', '~> 7.0'  
-  pod 'Swinject', '~> 2.0'
+  pod 'Kingfisher', '~> 7.0'
   pod 'Firebase/Core'
   pod 'Firebase/RemoteConfig'
   

@@ -6,6 +6,21 @@
 //
 
 import Foundation
+import Swinject
+
+class Global {
+    static let container = Container()
+}
+
+protocol MovieDetailsViewModelFactory {
+    func makeMovieDetailsViewModel(movieId: Int) -> MovieDetailsViewModel
+}
+
+class DefaultMovieDetailsViewModelFactory: MovieDetailsViewModelFactory {
+    func makeMovieDetailsViewModel(movieId: Int) -> MovieDetailsViewModel {
+        return MovieDetailsViewModel(movieId: movieId)
+    }
+}
 
 final class MovieDetailsViewModel: ObservableObject {
     @Published var isLoading: Bool = false

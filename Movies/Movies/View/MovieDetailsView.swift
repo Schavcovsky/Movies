@@ -12,6 +12,10 @@ struct MovieDetailsView: View {
     @ObservedObject var viewModel: MovieDetailsViewModel
     @State private var imageOpacity: Double = 0
     @State private var posterImageOpacity = 0.0
+    
+    init(viewModel: MovieDetailsViewModel) {
+       self.viewModel = viewModel
+   }
 
     var body: some View {
         ScrollView {

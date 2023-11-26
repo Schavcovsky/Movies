@@ -6,12 +6,13 @@
 //
 
 import UIKit
+import Swinject
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     var window: UIWindow?
-
-
+    static let container = Container()  // Only static shared container
+    
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         // Use this method to optionally configure and attach the UIWindow `window` to the provided UIWindowScene `scene`.
         // If using a storyboard, the `window` property will automatically be initialized and attached to the scene.
@@ -19,18 +20,43 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // Guard to ensure the scene is of type UIWindowScene
         guard let windowScene = (scene as? UIWindowScene) else { return }
 
-        // Create a new UIWindow using the windowScene constructor which takes in a window scene.
         let window = UIWindow(windowScene: windowScene)
-        
-        // Set the initial view controller
-        let initialViewController = DashboardViewController()
+        setupDependencyInjection()
+
+        let initialViewController = SceneDelegate.container.resolve(DashboardViewController.self)!
         let navigationController = UINavigationController(rootViewController: initialViewController)
         navigationController.navigationBar.prefersLargeTitles = true
         window.rootViewController = navigationController
-        
-        // Set the window and make it visible
         self.window = window
         window.makeKeyAndVisible()
+    }
+    
+    private func setupDependencyInjection() {
+            let container = SceneDelegate.container
+        // Existing registrations
+        container.register(NetworkManager.self) { _ in NetworkManager.shared() }
+        container.register(ConnectivityManager.self) { _ in ConnectivityManager() }
+        container.register(DashboardViewModel.self) { r in
+            DashboardViewModel(networkManager: r.resolve(NetworkManager.self)!)
+        }
+        container.register(DashboardViewController.self) { r in
+            let controller = DashboardViewController()
+            controller.viewModel = r.resolve(DashboardViewModel.self)
+            controller.connectivityManager = r.resolve(ConnectivityManager.self)
+            return controller
+        }
+
+        // Register MovieDetailsViewModelFactory
+        container.register(MovieDetailsViewModelFactory.self) { _ in
+            DefaultMovieDetailsViewModelFactory()
+        }
+        
+        container.register(FavoritesViewModel.self) { _ in
+            FavoritesViewModel()
+        }
+        container.register(FavoritesViewFactory.self) { _ in
+            DefaultFavoritesViewFactory()
+        }
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {

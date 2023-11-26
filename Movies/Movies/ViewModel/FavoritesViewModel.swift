@@ -7,6 +7,18 @@
 
 import Foundation
 
+protocol FavoritesViewFactory {
+    func makeFavoritesView() -> FavoritesView
+}
+
+class DefaultFavoritesViewFactory: FavoritesViewFactory {
+    func makeFavoritesView() -> FavoritesView {
+        let viewModel = SceneDelegate.container.resolve(FavoritesViewModel.self)!
+        return FavoritesView(viewModel: viewModel)
+    }
+}
+
+
 final class FavoritesViewModel: ObservableObject {
     private var favoritesMapping: [String: Int] = [:]
 

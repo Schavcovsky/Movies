@@ -7,8 +7,10 @@
 
 import UIKit
 import SwiftUI
+import Swinject
 
 class DashboardViewController: UIViewController, UISearchBarDelegate {
+    var container: Container!
     var viewModel: DashboardViewModel?
     var connectivityManager: ConnectivityManager?
     let spinner = UIActivityIndicatorView(style: .large)
@@ -117,9 +119,6 @@ class DashboardViewController: UIViewController, UISearchBarDelegate {
         setupNavigationBar()
         spinner.startAnimating()
         
-        // Initialize ViewModel
-        viewModel = DashboardViewModel(networkManager: NetworkManager.shared())
-        
         // Bind ViewModel
         viewModel?.reloadCollectionViewClosure = { [weak self] in
             DispatchQueue.main.async {
@@ -146,7 +145,6 @@ class DashboardViewController: UIViewController, UISearchBarDelegate {
         
         spinner.startAnimating()
         
-        connectivityManager = ConnectivityManager()
         connectivityManager?.delegate = self
         connectivityManager?.startMonitoring()
 
@@ -312,7 +310,8 @@ class DashboardViewController: UIViewController, UISearchBarDelegate {
     }
     
     @objc func watchListButtonTapped() {
-        let favoritesView = FavoritesView()
+        guard let factory = SceneDelegate.container.resolve(FavoritesViewFactory.self) else { return }
+        let favoritesView = factory.makeFavoritesView()
         let hostingController = UIHostingController(rootView: favoritesView)
         self.navigationController?.pushViewController(hostingController, animated: true)
     }
@@ -389,12 +388,15 @@ extension DashboardViewController: UICollectionViewDelegate {
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         if collectionView == moviesCollectionView {
-            if let movie = viewModel?.movie(at: indexPath) {
-                let movieDetailsViewModel = MovieDetailsViewModel(movieId: movie.id ?? 0)
-                // If you have pre-fetched data, you could initialize the MovieDetailsViewModel with it
+            if collectionView == moviesCollectionView {
+                if let movie = viewModel?.movie(at: indexPath) {
+                guard let factory = SceneDelegate.container.resolve(MovieDetailsViewModelFactory.self) else { return }
+                let movieDetailsViewModel = factory.makeMovieDetailsViewModel(movieId: movie.id ?? 0)
+
                 let detailsView = MovieDetailsView(viewModel: movieDetailsViewModel)
                 let hostingController = UIHostingController(rootView: detailsView)
                 self.navigationController?.pushViewController(hostingController, animated: true)
+            }
             }
         } else {
             viewModel?.isSearchMode = false

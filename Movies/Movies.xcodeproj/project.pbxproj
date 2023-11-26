@@ -30,6 +30,7 @@
 		03C2F2642B12F6D800AD1731 /* FavoritesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C2F2632B12F6D800AD1731 /* FavoritesViewModel.swift */; };
 		03D907262B130DA900200D75 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 03D907252B130DA900200D75 /* GoogleService-Info.plist */; };
 		03D907282B13BE9A00200D75 /* ConnectivityManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03D907272B13BE9A00200D75 /* ConnectivityManager.swift */; };
+		03D9072B2B13C5BC00200D75 /* Swinject in Frameworks */ = {isa = PBXBuildFile; productRef = 03D9072A2B13C5BC00200D75 /* Swinject */; };
 		222D25FE93CEBC0261340BF5 /* Pods_Movies.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 07A93DFB28D6854967C18DA7 /* Pods_Movies.framework */; };
 		2E6FF273C3FF977FF9E37E84 /* Pods_MoviesTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 14AFB8E6CA5F3E6494429284 /* Pods_MoviesTests.framework */; };
 		4D47A8C7F56CBFCF8BF577D2 /* Pods_Movies_MoviesUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 73F2D64ECF4A8F3B5F097A06 /* Pods_Movies_MoviesUITests.framework */; };
@@ -98,6 +99,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				222D25FE93CEBC0261340BF5 /* Pods_Movies.framework in Frameworks */,
+				03D9072B2B13C5BC00200D75 /* Swinject in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -277,6 +279,9 @@
 			dependencies = (
 			);
 			name = Movies;
+			packageProductDependencies = (
+				03D9072A2B13C5BC00200D75 /* Swinject */,
+			);
 			productName = Movies;
 			productReference = 030C9FC72B101B480039E04A /* Movies.app */;
 			productType = "com.apple.product-type.application";
@@ -354,6 +359,9 @@
 				"es-419",
 			);
 			mainGroup = 030C9FBE2B101B480039E04A;
+			packageReferences = (
+				03D907292B13C5BC00200D75 /* XCRemoteSwiftPackageReference "Swinject" */,
+			);
 			productRefGroup = 030C9FC82B101B480039E04A /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -866,6 +874,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		03D907292B13C5BC00200D75 /* XCRemoteSwiftPackageReference "Swinject" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Swinject/Swinject";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.8.4;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		03D9072A2B13C5BC00200D75 /* Swinject */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 03D907292B13C5BC00200D75 /* XCRemoteSwiftPackageReference "Swinject" */;
+			productName = Swinject;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 030C9FBF2B101B480039E04A /* Project object */;
 }

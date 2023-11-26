@@ -10,6 +10,10 @@ import SwiftUI
 struct FavoritesView: View {
     @ObservedObject var viewModel = FavoritesViewModel()
 
+    init(viewModel: FavoritesViewModel) {
+        self.viewModel = viewModel
+    }
+    
     var body: some View {
         Group {
             if viewModel.favoriteMovies.isEmpty {
@@ -29,6 +33,7 @@ struct FavoritesView: View {
     }
 }
 
+/*
 // Preview
 #if DEBUG
 struct FavoritesView_Previews: PreviewProvider {
@@ -37,3 +42,4 @@ struct FavoritesView_Previews: PreviewProvider {
     }
 }
 #endif
+*/

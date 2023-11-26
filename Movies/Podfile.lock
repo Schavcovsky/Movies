@@ -90,13 +90,11 @@ PODS:
   - nanopb/decode (2.30909.0)
   - nanopb/encode (2.30909.0)
   - PromisesObjC (2.3.1)
-  - Swinject (2.8.3)
 
 DEPENDENCIES:
   - Firebase/Core
   - Firebase/RemoteConfig
   - Kingfisher (~> 7.0)
-  - Swinject (~> 2.0)
 
 SPEC REPOS:
   trunk:
@@ -112,7 +110,6 @@ SPEC REPOS:
     - Kingfisher
     - nanopb
     - PromisesObjC
-    - Swinject
 
 SPEC CHECKSUMS:
   Firebase: 66043bd4579e5b73811f96829c694c7af8d67435
@@ -127,8 +124,7 @@ SPEC CHECKSUMS:
   Kingfisher: a18f05d3b6d37d8650ee4a3e61d57a28fc6207f6
   nanopb: b552cce312b6c8484180ef47159bc0f65a1f0431
   PromisesObjC: c50d2056b5253dadbd6c2bea79b0674bd5a52fa4
-  Swinject: 893c9a543000ac2f10ee4cbaf0933c6992c935d5
 
-PODFILE CHECKSUM: 8432d10d12547c4848e1b7d71a1b1c392465c0ae
+PODFILE CHECKSUM: 6a0c7902a913265b4a2fae28e6c1a5870905ce32
 
 COCOAPODS: 1.11.3
