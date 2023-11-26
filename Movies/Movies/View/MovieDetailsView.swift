@@ -12,7 +12,8 @@ struct MovieDetailsView: View {
     @ObservedObject var viewModel: MovieDetailsViewModel
     @State private var imageOpacity: Double = 0
     @State private var posterImageOpacity = 0.0
-    
+    @State private var scale: CGFloat = 1.0
+
     init(viewModel: MovieDetailsViewModel) {
        self.viewModel = viewModel
    }
@@ -124,9 +125,14 @@ struct MovieDetailsView: View {
             }
         }
         .navigationBarItems(trailing: Button(action: {
+            let wasFavorite = viewModel.isFavorite
             viewModel.toggleFavorite()
+            if !wasFavorite {
+                pulseAnimation()
+            }
         }) {
             Image(systemName: viewModel.isFavorite ? "heart.fill" : "heart")
+                .scaleEffect(scale)
                 .foregroundColor(viewModel.isFavorite ? .red : .gray)
         })
         .background(Color("backgroundColor"))
@@ -237,6 +243,16 @@ struct MovieDetailsView: View {
     func getHeaderOffset(for geometry: GeometryProxy) -> CGFloat {
         let offset = geometry.frame(in: .global).minY
         return offset > 0 ? -offset : 0
+    }
+    
+    private func pulseAnimation() {
+        withAnimation(Animation.easeInOut(duration: 0.5).repeatCount(3, autoreverses: true)) {
+            scale = 1.2
+        }
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+            scale = 1.0
+        }
     }
 }
 
