@@ -12,9 +12,7 @@ final class MovieDetailsViewModel: ObservableObject {
     @Published var movie: Result
     @Published var reviews: [Review] = []
     @Published var currentPage: Int = 1
-    @Published var reviewsLoaded: Bool = false // Added property to track reviews loaded
-    @Published var isBackdropLoading: Bool = true
-    @Published var isPosterLoading: Bool = true
+    @Published var reviewsLoaded: Bool = false
     @Published var selectedTab: DetailsTab = .about
 
     private var networkManager: NetworkManager

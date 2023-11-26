@@ -10,7 +10,9 @@ import Kingfisher
 
 struct MovieDetailsView: View {
     @ObservedObject var viewModel: MovieDetailsViewModel
-    
+    @State private var imageOpacity: Double = 0
+    @State private var posterImageOpacity = 0.0
+
     var body: some View {
         ScrollView {
             VStack {
@@ -18,22 +20,19 @@ struct MovieDetailsView: View {
                    let url = URL(string: "https://image.tmdb.org/t/p/original\(backdropPath)") {
                     GeometryReader { geometry in
                         ZStack {
-                            if viewModel.isBackdropLoading {
-                                ProgressView()
-                                    .frame(width: geometry.size.width, height: self.getHeaderHeight(for: geometry))
-                            }
-                            
                             KFImage(url)
                                 .resizable()
                                 .aspectRatio(contentMode: .fill)
                                 .frame(width: geometry.size.width, height: self.getHeaderHeight(for: geometry))
                                 .clipped()
-                                .offset(y: self.getHeaderOffset(for: geometry))
+                                .opacity(imageOpacity)
                                 .onAppear {
-                                    viewModel.isBackdropLoading = true
-                                }
-                                .onDisappear {
-                                    viewModel.isBackdropLoading = false
+                                    imageOpacity = 0
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                        withAnimation(.easeInOut(duration: 2)) {
+                                            imageOpacity = 1
+                                        }
+                                    }
                                 }
                         }
                     }
@@ -49,23 +48,20 @@ struct MovieDetailsView: View {
                     if let posterPath = viewModel.movie.posterPath,
                        let url = URL(string: "https://image.tmdb.org/t/p/w500\(posterPath)") {
                         ZStack {
-                            if viewModel.isPosterLoading {
-                                // Custom loading view
-                                ProgressView()
-                                    .frame(width: 120, height: 120) // Adjust size as needed
-                            }
-                            
                             KFImage(url)
                                 .resizable()
                                 .aspectRatio(contentMode: .fit)
                                 .frame(width: 120) // Adjust width as needed
                                 .cornerRadius(8)
                                 .shadow(radius: 8)
+                                .opacity(posterImageOpacity) // Apply opacity
                                 .onAppear {
-                                    viewModel.isPosterLoading = true
-                                }
-                                .onDisappear {
-                                    viewModel.isPosterLoading = false
+                                    posterImageOpacity = 0 // Start with an opacity of 0
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                        withAnimation(.easeInOut(duration: 2)) {
+                                            posterImageOpacity = 1 // Animate to full opacity
+                                        }
+                                    }
                                 }
                         }
                         .padding(.top, ((viewModel.movie.backdropPath?.isEmpty) != nil) ? -120 : 0)
@@ -130,6 +126,7 @@ struct MovieDetailsView: View {
                 .foregroundColor(viewModel.isFavorite ? .red : .gray)
         })
         .background(Color("backgroundColor"))
+        .edgesIgnoringSafeArea(.top)
     }
     
     private func aboutMovieView() -> some View {
