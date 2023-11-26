@@ -7,8 +7,6 @@
 
 import SwiftUI
 
-import SwiftUI
-
 struct FavoritesView: View {
     @ObservedObject var viewModel: FavoritesViewModel
 

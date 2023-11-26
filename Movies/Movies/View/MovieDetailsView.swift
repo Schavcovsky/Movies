@@ -257,7 +257,6 @@ struct MovieDetailsView: View {
     }
 }
 
-
 // Genre button view
 struct GenreButton: View {
     let genre: Genre
@@ -304,29 +303,40 @@ enum DetailsTab: CaseIterable {
     }
 }
 
-/*
- struct MovieDetailsView_Previews: PreviewProvider {
- static var previews: some View {
- 
- let sampleMovie = Result(
- adult: false,
- backdropPath: "placeholder_image", // Example backdrop path
- genreIDS: [28, 12],
- id: 123456,
- originalLanguage: "en",
- originalTitle: "Sample Movie",
- overview: "This is a sample overview of the movie.",
- popularity: 8.9,
- posterPath: "/pathToPoster.jpg",
- releaseDate: "2022-01-01",
- title: "Sample Movie",
- video: false,
- voteAverage: 7.5,
- voteCount: 200
- )
- 
- // Previewing the MovieDetailsView with the sample movie
- MovieDetailsView(movie: sampleMovie)
- }
- }
- */
+// Preview
+#if DEBUG
+struct MovieDetailsView_Previews: PreviewProvider {
+    static var previews: some View {
+        // Create a mock movie result
+        let mockMovie = Result(
+            author: "Sample Author",
+            authorDetails: AuthorDetails(name: "Author Name", username: "AuthorUsername", avatarPath: nil, rating: 5),
+            adult: false,
+            backdropPath: "/pathToBackdrop.jpg",
+            content: "Sample content",
+            createdAt: "2023-01-01",
+            genres: [Genre(id: 1, name: "Action"), Genre(id: 2, name: "Adventure")],
+            genreIDS: [1, 2],
+            id: 123,
+            originalLanguage: "en",
+            originalTitle: "Sample Original Title",
+            overview: "This is a sample overview of the movie.",
+            popularity: 8.9,
+            posterPath: "/pathToPoster.jpg",
+            releaseDate: "2023-01-01",
+            title: "Sample Movie",
+            updatedAt: "2023-01-01",
+            url: "http://example.com",
+            video: false,
+            voteAverage: 7.5,
+            voteCount: 200
+        )
+
+        // Create a mock view model with the mock movie
+        let mockViewModel = MovieDetailsViewModel(movieId: mockMovie.id ?? 0)
+
+        // Previewing the MovieDetailsView with the mock view model
+        MovieDetailsView(viewModel: mockViewModel)
+    }
+}
+#endif

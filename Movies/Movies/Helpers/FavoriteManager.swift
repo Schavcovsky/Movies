@@ -7,8 +7,6 @@
 
 import Foundation
 
-import Foundation
-
 // Codable struct to represent a favorite movie and the date it was added
 struct Favorite: Codable {
     let name: String
