@@ -141,7 +141,7 @@ class MovieCollectionViewCell: UICollectionViewCell {
         if let posterPath = result.posterPath, let url = URL(string: "https://image.tmdb.org/t/p/w500\(posterPath)") {
             movieImageView.kf.setImage(with: url)
         } else {
-            movieImageView.image = nil // Set a default image or leave it empty
+            movieImageView.image = UIImage(named: "image_not_available")
         }
     }
 }
