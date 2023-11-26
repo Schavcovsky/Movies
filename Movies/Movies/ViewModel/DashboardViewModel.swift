@@ -112,4 +112,12 @@ class DashboardViewModel {
     func movie(at indexPath: IndexPath) -> Result {
         return movies[indexPath.item]
     }
+    
+    func performSearch(withQuery query: String) {
+        currentPage = 1
+        searchQuery = query
+        isSearchMode = true
+        searchMovies(query: query, page: currentPage)
+        // Any additional logic
+    }
 }

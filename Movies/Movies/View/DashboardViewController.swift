@@ -5,7 +5,6 @@
 //  Created by Alejandro Villalobos on 23-11-23.
 //
 
-import UIKit
 import SwiftUI
 import Swinject
 
@@ -114,49 +113,85 @@ class DashboardViewController: UIViewController, UISearchBarDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        setupUI()
+        updateButtonStates()
+        setupBindings()
+        setupConnectivity()
+        setupGestures()
+        initialDataFetch()
+    }
+    
+    // MARK: - Setup Methods
+    
+    private func setupUI() {
         setupViews()
         layoutViews()
         setupNavigationBar()
         spinner.startAnimating()
-        
-        // Bind ViewModel
+    }
+    
+    private func setupBindings() {
         viewModel?.reloadCollectionViewClosure = { [weak self] in
-            DispatchQueue.main.async {
-                self?.moviesCollectionView.reloadData()
-                
-                if self?.viewModel?.isLoading == false {
-                    self?.spinner.stopAnimating()
-                }
-            }
+            self?.updateUIOnViewModelUpdate()
         }
+    }
+    
+    private func setupConnectivity() {
+        connectivityManager?.delegate = self
+        connectivityManager?.startMonitoring()
+        checkInternetConnectivity()
+    }
+    
+    private func setupGestures() {
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(viewTapped))
+        tapGesture.cancelsTouchesInView = false
+        view.addGestureRecognizer(tapGesture)
         
-        // Fetch 'Top Rated' movies by default
+        decreaseButton.addTarget(self, action: #selector(decreaseButtonTapped), for: .touchUpInside)
+        increaseButton.addTarget(self, action: #selector(increaseButtonTapped), for: .touchUpInside)
+        watchListButton.addTarget(self, action: #selector(watchListButtonTapped), for: .touchUpInside)
+    }
+    
+    private func initialDataFetch() {
         let defaultCategory = viewModel?.categories.first ?? .topRated
         viewModel?.activeCategoryIndex = viewModel?.categories.firstIndex(of: defaultCategory) ?? 0
         viewModel?.fetchMovies(category: defaultCategory.rawValue, page: viewModel?.currentPage ?? 1)
         
         searchBar.delegate = self
         searchButton.addTarget(self, action: #selector(searchButtonTapped), for: .touchUpInside)
-        
-        // Select 'Now Playing' category in the categoriesCollectionView
-        let firstCategoryIndexPath = IndexPath(item: 0, section: 0)
-        categoriesCollectionView.selectItem(at: firstCategoryIndexPath, animated: false, scrollPosition: .left)
-        collectionView(categoriesCollectionView, didSelectItemAt: firstCategoryIndexPath)
-        
-        spinner.startAnimating()
-        
-        connectivityManager?.delegate = self
-        connectivityManager?.startMonitoring()
-
+        selectInitialCategory()
+    }
+    
+    // MARK: - Additional Functions
+    
+    private func updateUIOnViewModelUpdate() {
+        DispatchQueue.main.async {
+            self.moviesCollectionView.reloadData()
+            if self.viewModel?.isLoading == false {
+                self.spinner.stopAnimating()
+            }
+        }
+    }
+    
+    private func checkInternetConnectivity() {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
             if !(self.connectivityManager?.isConnected ?? false) {
                 self.showNoInternetAlert()
             }
         }
-        
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(viewTapped))
-        tapGesture.cancelsTouchesInView = false
-        view.addGestureRecognizer(tapGesture)
+    }
+    
+    private func selectInitialCategory() {
+        let firstCategoryIndexPath = IndexPath(item: 0, section: 0)
+        categoriesCollectionView.selectItem(at: firstCategoryIndexPath, animated: false, scrollPosition: .left)
+        collectionView(categoriesCollectionView, didSelectItemAt: firstCategoryIndexPath)
+    }
+    
+    private func stopSpinnerIfNeeded() {
+        if viewModel?.isLoading == false {
+            spinner.stopAnimating()
+        }
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -170,9 +205,6 @@ class DashboardViewController: UIViewController, UISearchBarDelegate {
     }
     
     func setupViews() {
-        // Configure the search bar
-        searchBar.placeholder = "Search Here ..."
-        
         // Configure the Categories collection view
         categoriesCollectionView.register(CategoryCollectionViewCell.self, forCellWithReuseIdentifier: "CategoryCell")
         categoriesCollectionView.dataSource = self
@@ -197,12 +229,6 @@ class DashboardViewController: UIViewController, UISearchBarDelegate {
         
         view.backgroundColor = UIColor(named: "backgroundColor")
         moviesCollectionView.backgroundColor = .clear
-        
-        decreaseButton.addTarget(self, action: #selector(decreaseButtonTapped), for: .touchUpInside)
-        increaseButton.addTarget(self, action: #selector(increaseButtonTapped), for: .touchUpInside)
-        watchListButton.addTarget(self, action: #selector(watchListButtonTapped), for: .touchUpInside)
-        
-        updateButtonStates()
     }
     
     func layoutViews() {
@@ -275,14 +301,11 @@ class DashboardViewController: UIViewController, UISearchBarDelegate {
     }
     
     @objc func searchButtonTapped() {
-        guard let query = searchBar.text, !query.isEmpty else { return }
-        viewModel?.currentPage = 1
-        viewModel?.searchQuery = query
-        viewModel?.isSearchMode = true
-        viewModel?.searchMovies(query: query, page: viewModel?.currentPage ?? 1)
-        
-        categoriesCollectionView.reloadData()
-        updateButtonStates() // Update the button states here
+        guard let query = searchBar.text, !query.isEmpty else {
+            // Consider showing an alert or some feedback to the user
+            return
+        }
+        viewModel?.performSearch(withQuery: query)
     }
     
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
@@ -296,11 +319,11 @@ class DashboardViewController: UIViewController, UISearchBarDelegate {
         categoriesCollectionView.reloadData()
         updateButtonStates() // Update the button states here
     }
-
+    
     @objc func viewTapped() {
         searchBar.resignFirstResponder()
     }
-
+    
     @objc func decreaseButtonTapped() {
         guard let viewModel = viewModel, viewModel.currentPage > 1 else { return }
         viewModel.currentPage -= 1
@@ -323,7 +346,7 @@ class DashboardViewController: UIViewController, UISearchBarDelegate {
         let hostingController = UIHostingController(rootView: favoritesView)
         self.navigationController?.pushViewController(hostingController, animated: true)
     }
-
+    
     func updateButtonStates() {
         decreaseButton.isEnabled = viewModel?.currentPage ?? 1 > 1
         decreaseButton.tintColor = decreaseButton.isEnabled ? UIColor(named: "textColor") : .gray
@@ -339,7 +362,7 @@ extension DashboardViewController: ConnectivityDelegate {
             showNoInternetAlert()
         }
     }
-
+    
     private func showNoInternetAlert() {
         let alert = UIAlertController(title: "No Internet Connection", message: "Please check your internet connection.", preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "OK", style: .default))
@@ -393,18 +416,17 @@ extension DashboardViewController: UICollectionViewDelegateFlowLayout {
 }
 
 extension DashboardViewController: UICollectionViewDelegate {
-    
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         if collectionView == moviesCollectionView {
             if collectionView == moviesCollectionView {
                 if let movie = viewModel?.movie(at: indexPath) {
-                guard let factory = SceneDelegate.container.resolve(MovieDetailsViewModelFactory.self) else { return }
-                let movieDetailsViewModel = factory.makeMovieDetailsViewModel(movieId: movie.id ?? 0)
-
-                let detailsView = MovieDetailsView(viewModel: movieDetailsViewModel)
-                let hostingController = UIHostingController(rootView: detailsView)
-                self.navigationController?.pushViewController(hostingController, animated: true)
-            }
+                    guard let factory = SceneDelegate.container.resolve(MovieDetailsViewModelFactory.self) else { return }
+                    let movieDetailsViewModel = factory.makeMovieDetailsViewModel(movieId: movie.id ?? 0)
+                    
+                    let detailsView = MovieDetailsView(viewModel: movieDetailsViewModel)
+                    let hostingController = UIHostingController(rootView: detailsView)
+                    self.navigationController?.pushViewController(hostingController, animated: true)
+                }
             }
         } else {
             viewModel?.isSearchMode = false

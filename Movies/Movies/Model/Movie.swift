@@ -88,11 +88,6 @@ struct Genre: Codable {
     let name: String?
 }
 
-////
-///
-///
-///
-
 // MARK: - ReviewsResponse
 struct ReviewsResponse: Codable {
     let id: Int
