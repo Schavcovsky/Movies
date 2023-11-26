@@ -60,10 +60,14 @@ class MovieCollectionViewCell: UICollectionViewCell {
         return button
     }()
     
+    var movieId: Int?
+    var movieName: String?
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupViews()
         setupConstraints()
+        favoriteButton.addTarget(self, action: #selector(favoriteButtonTapped), for: .touchUpInside)
     }
     
     required init?(coder: NSCoder) {
@@ -123,11 +127,29 @@ class MovieCollectionViewCell: UICollectionViewCell {
         titleLabel.text = "Title:\n" + (result.title ?? "N/A")
         releaseDateLabel.text = "Release Date:\n" + (result.releaseDate ?? "N/A")
         averageRatingLabel.text = "Average Rating:\n" + String(format: "%.1f", result.voteAverage ?? 0.0)
-
+        configureFavoriteButton(movieId: result.id ?? 0)
+        self.movieId = result.id
+        self.movieName = result.title
+        
         if let posterPath = result.posterPath, let url = URL(string: "https://image.tmdb.org/t/p/w500\(posterPath)") {
             movieImageView.kf.setImage(with: url)
         } else {
             movieImageView.image = UIImage(named: "image_not_available")
+        }
+    }
+    
+    func configureFavoriteButton(movieId: Int) {
+        let isFavorite = FavoritesManager.shared.isFavorite(movieId: movieId)
+        let imageName = isFavorite ? "heart.filled" : "heart.empty"
+        let image = UIImage(named: imageName)
+        favoriteButton.setImage(image, for: .normal)
+        favoriteButton.tintColor = isFavorite ? nil : UIColor(named: "secondaryAccentColor")
+    }
+    
+    @objc private func favoriteButtonTapped() {
+        if let movieId = self.movieId, let movieName = self.movieName {
+            FavoritesManager.shared.toggleFavorite(movieId: movieId, movieName: movieName)
+            configureFavoriteButton(movieId: movieId)
         }
     }
 }

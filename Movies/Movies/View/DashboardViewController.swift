@@ -313,6 +313,8 @@ extension DashboardViewController: UICollectionViewDataSource {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "MovieCell", for: indexPath) as! MovieCollectionViewCell
             if let movie = viewModel?.movie(at: indexPath) {
                 cell.configure(with: movie)
+                cell.movieId = movie.id
+                cell.movieName = movie.title
             }
             return cell
         }
