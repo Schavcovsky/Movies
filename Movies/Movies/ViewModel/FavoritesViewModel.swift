@@ -8,14 +8,13 @@
 import Foundation
 
 final class FavoritesViewModel: ObservableObject {
-    @Published var favoriteMovies: [String] = []
-
     private var favoritesMapping: [String: Int] = [:]
 
+    @Published var favoriteMovies: [(id: Int, name: String)] = []
+
     func loadFavorites() {
-        let favorites = FavoritesManager.shared.getFavorites() // Updated to use getFavorites method
-        favoriteMovies = favorites.map { $0.value }.sorted()
-        favoritesMapping = Dictionary(uniqueKeysWithValues: favorites.map { ($0.value, $0.key) })
+        // Use the method that sorts by most recent
+        favoriteMovies = FavoritesManager.shared.getFavoritesSortedByMostRecent()
     }
 
     func getMovieId(forName name: String) -> Int? {

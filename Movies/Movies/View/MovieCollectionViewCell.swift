@@ -143,7 +143,6 @@ class MovieCollectionViewCell: UICollectionViewCell {
         let imageName = isFavorite ? "heart.filled" : "heart.empty"
         let image = UIImage(named: imageName)
         favoriteButton.setImage(image, for: .normal)
-        favoriteButton.tintColor = isFavorite ? nil : UIColor(named: "secondaryAccentColor")
     }
     
     @objc private func favoriteButtonTapped() {

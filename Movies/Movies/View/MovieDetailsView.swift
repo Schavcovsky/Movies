@@ -133,8 +133,6 @@ struct MovieDetailsView: View {
         VStack(alignment: .leading, spacing: 12) {
             if viewModel.isLoading {
                 Spacer()
-                ProgressView()
-                Spacer()
             } else {
                 Text("Overview:")
                     .font(.headline)

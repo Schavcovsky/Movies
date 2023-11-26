@@ -7,22 +7,29 @@
 
 import Foundation
 
+import Foundation
+
+// Codable struct to represent a favorite movie and the date it was added
+struct Favorite: Codable {
+    let name: String
+    let dateAdded: Date
+}
+
 class FavoritesManager {
     static let shared = FavoritesManager()
     
     private let favoritesKey = "favorites"
-    
-    private var favorites: [Int: String] {
+
+    private var favorites: [Int: Favorite] {
         get {
             if let data = UserDefaults.standard.data(forKey: favoritesKey),
-               let stringKeyDictionary = (try? JSONSerialization.jsonObject(with: data)) as? [String: String] {
-                return Dictionary(uniqueKeysWithValues: stringKeyDictionary.map { (Int($0) ?? 0, $1) })
+               let favorites = try? JSONDecoder().decode([Int: Favorite].self, from: data) {
+                return favorites
             }
             return [:]
         }
         set {
-            let stringKeyDictionary = Dictionary(uniqueKeysWithValues: newValue.map { (String($0), $1) })
-            if let data = try? JSONSerialization.data(withJSONObject: stringKeyDictionary) {
+            if let data = try? JSONEncoder().encode(newValue) {
                 UserDefaults.standard.set(data, forKey: favoritesKey)
             }
         }
@@ -31,23 +38,29 @@ class FavoritesManager {
     private init() {}
     
     func getFavorites() -> [Int: String] {
-        return favorites
+        return favorites.mapValues { $0.name }
     }
 
     func toggleFavorite(movieId: Int, movieName: String) {
-        if favorites.keys.contains(movieId) {
+        if favorites[movieId] != nil {
             favorites.removeValue(forKey: movieId)
         } else {
-            favorites[movieId] = movieName
+            favorites[movieId] = Favorite(name: movieName, dateAdded: Date())
         }
     }
     
     func isFavorite(movieId: Int) -> Bool {
-        favorites.keys.contains(movieId)
+        favorites[movieId] != nil
     }
 
-    // Optional: Method to get the name of a favorited movie
-    func getAllFavoriteMovieNames() -> [String] {
-       return Array(favorites.values).sorted()
-   }
+    func getFavoritesSortedByMostRecent() -> [(id: Int, name: String)] {
+        return favorites
+            .sorted { $0.value.dateAdded > $1.value.dateAdded }
+            .map { ($0.key, $0.value.name) }
+    }
+
+    func clearFavorites() {
+        UserDefaults.standard.removeObject(forKey: favoritesKey)
+    }
 }
+
