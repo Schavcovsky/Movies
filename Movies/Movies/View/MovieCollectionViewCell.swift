@@ -15,7 +15,12 @@ class MovieCollectionViewCell: UICollectionViewCell {
         imageView.contentMode = .scaleAspectFill
         imageView.clipsToBounds = true
         imageView.layer.cornerRadius = 8
-        imageView.translatesAutoresizingMaskIntoConstraints = false
+        imageView.translatesAutoresizingMaskIntoConstraints = false        
+        imageView.kf.indicatorType = .activity
+        if let indicator = imageView.kf.indicator?.view as? UIActivityIndicatorView {
+            indicator.style = .medium
+            indicator.color = .gray
+        }
         return imageView
     }()
     

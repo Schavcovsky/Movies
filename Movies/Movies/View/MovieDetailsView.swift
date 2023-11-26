@@ -10,7 +10,6 @@ import Kingfisher
 
 struct MovieDetailsView: View {
     @ObservedObject var viewModel: MovieDetailsViewModel
-    @State private var selectedTab: DetailsTab = .about
     
     var body: some View {
         ScrollView {
@@ -18,44 +17,71 @@ struct MovieDetailsView: View {
                 if let backdropPath = viewModel.movie.backdropPath, !backdropPath.isEmpty,
                    let url = URL(string: "https://image.tmdb.org/t/p/original\(backdropPath)") {
                     GeometryReader { geometry in
-                        KFImage(url)
-                            .resizable()
-                            .aspectRatio(contentMode: .fill)
-                            .frame(width: geometry.size.width, height: self.getHeaderHeight(for: geometry))
-                            .clipped()
-                            .offset(y: self.getHeaderOffset(for: geometry))
+                        ZStack {
+                            if viewModel.isBackdropLoading {
+                                ProgressView()
+                                    .frame(width: geometry.size.width, height: self.getHeaderHeight(for: geometry))
+                            }
+                            
+                            KFImage(url)
+                                .resizable()
+                                .aspectRatio(contentMode: .fill)
+                                .frame(width: geometry.size.width, height: self.getHeaderHeight(for: geometry))
+                                .clipped()
+                                .offset(y: self.getHeaderOffset(for: geometry))
+                                .onAppear {
+                                    viewModel.isBackdropLoading = true
+                                }
+                                .onDisappear {
+                                    viewModel.isBackdropLoading = false
+                                }
+                        }
                     }
                     .frame(height: 300) // Allocate space for the backdrop image if it exists
                 } else {
                     // If there is no backdropPath, dynamically adjust the padding
                     Spacer().frame(height: 100)
                 }
-
+                
                 // Horizontal stack for the poster image and movie title
                 HStack(alignment: .top, spacing: 16) {
                     // Poster Image
                     if let posterPath = viewModel.movie.posterPath,
                        let url = URL(string: "https://image.tmdb.org/t/p/w500\(posterPath)") {
-                        KFImage(url)
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                            .frame(width: 120) // Adjust width as needed
-                            .cornerRadius(8)
-                            .shadow(radius: 4)
-                            .padding(.top, ((viewModel.movie.backdropPath?.isEmpty) != nil) ? -100 : 0)
+                        ZStack {
+                            if viewModel.isPosterLoading {
+                                // Custom loading view
+                                ProgressView()
+                                    .frame(width: 120, height: 120) // Adjust size as needed
+                            }
+                            
+                            KFImage(url)
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .frame(width: 120) // Adjust width as needed
+                                .cornerRadius(8)
+                                .shadow(radius: 8)
+                                .onAppear {
+                                    viewModel.isPosterLoading = true
+                                }
+                                .onDisappear {
+                                    viewModel.isPosterLoading = false
+                                }
+                        }
+                        .padding(.top, ((viewModel.movie.backdropPath?.isEmpty) != nil) ? -120 : 0)
                     }
-
+                    
                     // Movie Title and Genre Buttons
                     VStack(alignment: .leading, spacing: 8) {
                         // Movie Title
                         Text(viewModel.movie.title ?? "N/A")
                             .font(.title2)
                             .fontWeight(.bold)
-                                            }
+                    }
                     .frame(maxWidth: .infinity, alignment: .leading)
                 }
                 .padding(.horizontal)
-
+                
                 // Movie Overview and Details
                 VStack(alignment: .leading, spacing: 12) {
                     // Genre Buttons
@@ -70,29 +96,29 @@ struct MovieDetailsView: View {
                         .padding(.bottom)
                     }
                     
-                    Picker("Options", selection: $selectedTab) {
+                    Picker("Options", selection: $viewModel.selectedTab) {
                         ForEach(DetailsTab.allCases, id: \.self) { tab in
                             Text(tab.title).tag(tab)
                         }
                     }
                     .pickerStyle(SegmentedPickerStyle())
                     .padding(.bottom)
-                    .onChange(of: selectedTab) { newValue in
+                    .onChange(of: viewModel.selectedTab) { newValue in
                         if newValue == .reviews && !viewModel.reviewsLoaded {
                             // Trigger the service call to fetch reviews here
                             viewModel.fetchReviews(movieId: viewModel.movie.id ?? 0, page: viewModel.currentPage)
                         }
                     }
-
+                    
                     Group {
-                        switch selectedTab {
+                        switch viewModel.selectedTab {
                         case .about:
                             aboutMovieView()
                         case .reviews:
                             reviewsView()
                         }
                     }
-                    .animation(.default, value: selectedTab)
+                    .animation(.default, value: viewModel.selectedTab)
                 }
                 .padding()
             }
@@ -103,82 +129,62 @@ struct MovieDetailsView: View {
     
     private func aboutMovieView() -> some View {
         VStack(alignment: .leading, spacing: 12) {
-            
-            if let overview = viewModel.movie.overview, overview != "" {                
-                Text("Overview:")
-                    .font(.headline)
-                
-                Text(overview)
-                    .font(.subheadline)
-            }
-            
-            HStack {
-               VStack(alignment: .leading) {
-                   DetailItem(title: "Release Date:", value: viewModel.movie.releaseDate ?? "N/A")
-                   DetailItem(title: "Average Rating:", value: viewModel.movie.voteAverage?.description ?? "N/A")
-               }
-               
-               VStack(alignment: .leading) {
-                   DetailItem(title: "Rate Count:", value: viewModel.movie.voteCount?.description ?? "N/A")
-                   DetailItem(title: "Popularity:", value: viewModel.movie.popularity?.description ?? "N/A")
-               }
-           }
-        }
-    }
-
-    // Helper function for the Reviews View
-    private func reviewsView() -> some View {
-        VStack(alignment: .leading, spacing: 8) {
-            if viewModel.reviews.isEmpty {
-                if let movieTitle = viewModel.movie.title {
-                    Text("\(movieTitle) has no reviews.")
-                }
+            if viewModel.isLoading {
+                Spacer()
+                ProgressView()
+                Spacer()
             } else {
-                ForEach(viewModel.reviews, id: \.id) { review in
-                    VStack(alignment: .leading, spacing: 4) {
-                        HStack {
-                            if let avatarPath = review.authorDetails?.avatarPath,
-                               let url = URL(string: "https://image.tmdb.org/t/p/w500\(avatarPath)") {
-                                KFImage(url)
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fill)
-                                    .frame(width: 50, height: 50)
-                                    .clipShape(Circle())
-                            } else {
-                                Image(systemName: "person.fill")
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fill)
-                                    .frame(width: 50, height: 50)
-                                    .background(Color.gray)
-                                    .clipShape(Circle())
-                            }
-                            
-                            VStack(alignment: .leading, spacing: 2) {
-                                Text(review.author ?? "Unknown Author")
-                                    .font(.headline)
-                                if let rating = review.authorDetails?.rating {
-                                    Text("Rating: \(rating)/10")
-                                        .font(.subheadline)
-                                }
-                            }
-                        }
-                        
-                        Text(review.content ?? "")
-                            .font(.body)
-                            .padding(.top, 8)
-                        
-                        Divider()
+                if let overview = viewModel.movie.overview, overview != "" {
+                    Text("Overview:")
+                        .font(.headline)
+                    
+                    Text(overview)
+                        .font(.subheadline)
+                }
+                
+                HStack {
+                    VStack(alignment: .leading) {
+                        DetailItem(title: "Release Date:", value: viewModel.movie.releaseDate ?? "N/A")
+                        DetailItem(title: "Average Rating:", value: viewModel.movie.voteAverage?.description ?? "N/A")
+                    }
+                    
+                    VStack(alignment: .leading) {
+                        DetailItem(title: "Rate Count:", value: viewModel.movie.voteCount?.description ?? "N/A")
+                        DetailItem(title: "Popularity:", value: viewModel.movie.popularity?.description ?? "N/A")
                     }
                 }
             }
         }
     }
-
+    
+    // Helper function for the Reviews View
+    private func reviewsView() -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            if viewModel.isLoading {
+                Spacer()
+                ProgressView()
+                Spacer()
+            } else {
+                if viewModel.reviews.isEmpty {
+                    if let movieTitle = viewModel.movie.title {
+                        Text("\(movieTitle) has no reviews.")
+                    }
+                } else {
+                    ForEach(viewModel.reviews, id: \.id) { review in
+                        VStack(alignment: .leading, spacing: 4) {
+                            // ... Review content
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
     func getHeaderHeight(for geometry: GeometryProxy) -> CGFloat {
         let offset = geometry.frame(in: .global).minY
         return max(0, 300 + offset) // This ensures that the header height doesn't go below 0
     }
-
+    
     func getHeaderOffset(for geometry: GeometryProxy) -> CGFloat {
         let offset = geometry.frame(in: .global).minY
         return offset > 0 ? -offset : 0
@@ -189,7 +195,7 @@ struct MovieDetailsView: View {
 // Genre button view
 struct GenreButton: View {
     let genre: Genre
-
+    
     var body: some View {
         Button(action: {
             // Action for genre button tap
@@ -208,7 +214,7 @@ struct GenreButton: View {
 struct DetailItem: View {
     let title: String
     let value: String
-
+    
     var body: some View {
         VStack(alignment: .leading) {
             Text(title)
@@ -233,28 +239,28 @@ enum DetailsTab: CaseIterable {
 }
 
 /*
-struct MovieDetailsView_Previews: PreviewProvider {
-    static var previews: some View {
-        
-        let sampleMovie = Result(
-            adult: false,
-            backdropPath: "placeholder_image", // Example backdrop path
-            genreIDS: [28, 12],
-            id: 123456,
-            originalLanguage: "en",
-            originalTitle: "Sample Movie",
-            overview: "This is a sample overview of the movie.",
-            popularity: 8.9,
-            posterPath: "/pathToPoster.jpg",
-            releaseDate: "2022-01-01",
-            title: "Sample Movie",
-            video: false,
-            voteAverage: 7.5,
-            voteCount: 200
-        )
-
-        // Previewing the MovieDetailsView with the sample movie
-        MovieDetailsView(movie: sampleMovie)
-    }
-}
-*/
+ struct MovieDetailsView_Previews: PreviewProvider {
+ static var previews: some View {
+ 
+ let sampleMovie = Result(
+ adult: false,
+ backdropPath: "placeholder_image", // Example backdrop path
+ genreIDS: [28, 12],
+ id: 123456,
+ originalLanguage: "en",
+ originalTitle: "Sample Movie",
+ overview: "This is a sample overview of the movie.",
+ popularity: 8.9,
+ posterPath: "/pathToPoster.jpg",
+ releaseDate: "2022-01-01",
+ title: "Sample Movie",
+ video: false,
+ voteAverage: 7.5,
+ voteCount: 200
+ )
+ 
+ // Previewing the MovieDetailsView with the sample movie
+ MovieDetailsView(movie: sampleMovie)
+ }
+ }
+ */
