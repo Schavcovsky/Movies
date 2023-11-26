@@ -19,12 +19,25 @@ final class MovieDetailsViewModel: ObservableObject {
 
     private var networkManager: NetworkManager
     
+    
+    var isFavorite: Bool {
+        FavoritesManager.shared.isFavorite(movieId: movie.id ?? 0)
+    }
+    
     init(movieId: Int) {
         movie = Result(author: nil, authorDetails: nil, adult: nil, backdropPath: nil, content: nil, createdAt: nil, genres: nil, genreIDS: nil, id: nil, originalLanguage: nil, originalTitle: nil, overview: nil, popularity: nil, posterPath: nil, releaseDate: nil, title: nil, updatedAt: nil, url: nil, video: nil, voteAverage: nil, voteCount: nil)
         networkManager = NetworkManager.shared()
         fetchMovieDetails(movieId: movieId)
     }
 
+    // Toggle favorite status
+    func toggleFavorite() {
+        guard let movieId = movie.id, let movieName = movie.title else { return }
+        FavoritesManager.shared.toggleFavorite(movieId: movieId, movieName: movieName)
+        // Notifying the view about the change
+        self.objectWillChange.send()
+    }
+    
     func fetchMovieDetails(movieId: Int) {
         DispatchQueue.main.async {
             self.isLoading = true
@@ -81,4 +94,5 @@ final class MovieDetailsViewModel: ObservableObject {
             }
         }
     }
+    
 }

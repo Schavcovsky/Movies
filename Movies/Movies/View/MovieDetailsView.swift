@@ -123,7 +123,12 @@ struct MovieDetailsView: View {
                 .padding()
             }
         }
-        .edgesIgnoringSafeArea(.top) // Allow background image to extend into the top safe area
+        .navigationBarItems(trailing: Button(action: {
+            viewModel.toggleFavorite()
+        }) {
+            Image(systemName: viewModel.isFavorite ? "heart.fill" : "heart")
+                .foregroundColor(viewModel.isFavorite ? .red : .gray)
+        })
         .background(Color("backgroundColor"))
     }
     

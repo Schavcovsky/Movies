@@ -35,6 +35,9 @@
     },
     "Rating: %lld/10" : {
 
+    },
+    "You haven't marked any movies as Favorite yet." : {
+
     }
   },
   "version" : "1.0"

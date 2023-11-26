@@ -138,6 +138,11 @@ class DashboardViewController: UIViewController, UISearchBarDelegate {
         collectionView(categoriesCollectionView, didSelectItemAt: firstCategoryIndexPath)
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        moviesCollectionView.reloadData()
+    }
+    
     func setupNavigationBar() {
         navigationItem.title = "Dashboard"
         navigationController?.navigationBar.prefersLargeTitles = true
