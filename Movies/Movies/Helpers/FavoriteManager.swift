@@ -29,6 +29,10 @@ class FavoritesManager {
     }
     
     private init() {}
+    
+    func getFavorites() -> [Int: String] {
+        return favorites
+    }
 
     func toggleFavorite(movieId: Int, movieName: String) {
         if favorites.keys.contains(movieId) {

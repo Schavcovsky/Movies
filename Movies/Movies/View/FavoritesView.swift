@@ -7,24 +7,23 @@
 
 import SwiftUI
 
-import SwiftUI
-
 struct FavoritesView: View {
-    @State private var favoriteMovies: [String] = []
+    @ObservedObject var viewModel = FavoritesViewModel()
 
     var body: some View {
-        List(favoriteMovies, id: \.self) { movie in
-            Text(movie)
+        List(viewModel.favoriteMovies, id: \.self) { movie in
+            if let movieId = viewModel.getMovieId(forName: movie) {
+                NavigationLink(destination: MovieDetailsView(viewModel: MovieDetailsViewModel(movieId: movieId))) {
+                    Text(movie)
+                }
+            }
         }
-        .onAppear(perform: loadFavorites)
+        .onAppear(perform: viewModel.loadFavorites)
         .navigationBarTitle("Favorites", displayMode: .inline)
-    }
-
-    private func loadFavorites() {
-        favoriteMovies = FavoritesManager.shared.getAllFavoriteMovieNames()
     }
 }
 
+// Preview
 #Preview {
     FavoritesView()
 }

@@ -347,7 +347,7 @@ extension DashboardViewController: UICollectionViewDelegate {
         if collectionView == moviesCollectionView {
             guard let movieId = viewModel?.movies[indexPath.item].id else { return }
                     
-            let movieDetailsViewModel = MovieDetailsViewModel()
+            let movieDetailsViewModel = MovieDetailsViewModel(movieId: movieId)
             movieDetailsViewModel.fetchMovieDetails(movieId: movieId)
 
             let detailsView = MovieDetailsView(viewModel: movieDetailsViewModel)
