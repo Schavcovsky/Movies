@@ -6,11 +6,6 @@
 //
 
 import Foundation
-import Swinject
-
-class Global {
-    static let container = Container()
-}
 
 protocol MovieDetailsViewModelFactory {
     func makeMovieDetailsViewModel(movieId: Int) -> MovieDetailsViewModel
@@ -27,9 +22,6 @@ final class MovieDetailsViewModel: ObservableObject {
     @Published var movie: Result
     @Published var reviews: [Review] = []
     @Published var currentPage: Int = 1
-    @Published var reviewsLoaded: Bool = false
-    @Published var selectedTab: DetailsTab = .about
-
     private var networkManager: NetworkManager
     
     

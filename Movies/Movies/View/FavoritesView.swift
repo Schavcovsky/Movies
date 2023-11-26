@@ -7,13 +7,11 @@
 
 import SwiftUI
 
-struct FavoritesView: View {
-    @ObservedObject var viewModel = FavoritesViewModel()
+import SwiftUI
 
-    init(viewModel: FavoritesViewModel) {
-        self.viewModel = viewModel
-    }
-    
+struct FavoritesView: View {
+    @ObservedObject var viewModel: FavoritesViewModel
+
     var body: some View {
         Group {
             if viewModel.favoriteMovies.isEmpty {
@@ -21,25 +19,27 @@ struct FavoritesView: View {
                     .foregroundColor(.secondary)
                     .padding()
             } else {
-                List(viewModel.favoriteMovies, id: \.id) { favorite in
-                    NavigationLink(destination: MovieDetailsView(viewModel: MovieDetailsViewModel(movieId: favorite.id))) {
-                        Text(favorite.name)
-                    }
-                }
+                movieList
             }
         }
         .onAppear(perform: viewModel.loadFavorites)
         .navigationBarTitle("Favorites", displayMode: .large)
     }
+
+    private var movieList: some View {
+        List(viewModel.favoriteMovies, id: \.id) { favorite in
+            NavigationLink(destination: MovieDetailsView(viewModel: MovieDetailsViewModel(movieId: favorite.id))) {
+                Text(favorite.name)
+            }
+        }
+    }
 }
 
-/*
 // Preview
 #if DEBUG
 struct FavoritesView_Previews: PreviewProvider {
     static var previews: some View {
-        FavoritesView()
+        FavoritesView(viewModel: FavoritesViewModel())
     }
 }
 #endif
-*/

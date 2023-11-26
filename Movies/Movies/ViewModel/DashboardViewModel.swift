@@ -118,6 +118,5 @@ class DashboardViewModel {
         searchQuery = query
         isSearchMode = true
         searchMovies(query: query, page: currentPage)
-        // Any additional logic
     }
 }

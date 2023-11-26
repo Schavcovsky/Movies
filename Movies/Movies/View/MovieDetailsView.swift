@@ -13,6 +13,7 @@ struct MovieDetailsView: View {
     @State private var imageOpacity: Double = 0
     @State private var posterImageOpacity = 0.0
     @State private var scale: CGFloat = 1.0
+    @State var selectedTab: DetailsTab = .about
 
     init(viewModel: MovieDetailsViewModel) {
        self.viewModel = viewModel
@@ -97,29 +98,29 @@ struct MovieDetailsView: View {
                         .padding(.bottom)
                     }
                     
-                    Picker("Options", selection: $viewModel.selectedTab) {
+                    Picker("Options", selection: $selectedTab) {
                         ForEach(DetailsTab.allCases, id: \.self) { tab in
                             Text(tab.title).tag(tab)
                         }
                     }
                     .pickerStyle(SegmentedPickerStyle())
                     .padding(.bottom)
-                    .onChange(of: viewModel.selectedTab) { newValue in
-                        if newValue == .reviews && !viewModel.reviewsLoaded {
+                    .onChange(of: selectedTab) { newValue in
+                        if newValue == .reviews {
                             // Trigger the service call to fetch reviews here
                             viewModel.fetchReviews(movieId: viewModel.movie.id ?? 0, page: viewModel.currentPage)
                         }
                     }
                     
                     Group {
-                        switch viewModel.selectedTab {
+                        switch selectedTab {
                         case .about:
                             aboutMovieView()
                         case .reviews:
                             reviewsView()
                         }
                     }
-                    .animation(.default, value: viewModel.selectedTab)
+                    .animation(.default, value: selectedTab)
                 }
                 .padding()
             }
