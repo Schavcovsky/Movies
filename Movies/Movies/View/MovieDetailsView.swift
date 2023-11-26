@@ -158,54 +158,70 @@ struct MovieDetailsView: View {
     // Helper function for the Reviews View
     private func reviewsView() -> some View {
         VStack(alignment: .leading, spacing: 8) {
-            if viewModel.isLoading {
-                Spacer()
-                ProgressView()
-                Spacer()
-            } else {
-                if viewModel.reviews.isEmpty {
-                    if let movieTitle = viewModel.movie.title {
-                        Text("\(movieTitle) has no reviews.")
-                    }
+                if viewModel.isLoading {
+                    Spacer()
+                    ProgressView()
+                    Spacer()
                 } else {
-                    ForEach(viewModel.reviews, id: \.id) { review in
-                        VStack(alignment: .leading, spacing: 4) {
-                            HStack {
-                                if let avatarPath = review.authorDetails?.avatarPath,
-                                   let url = URL(string: "https://image.tmdb.org/t/p/w500\(avatarPath)") {
-                                    KFImage(url)
-                                        .resizable()
-                                        .aspectRatio(contentMode: .fill)
-                                        .frame(width: 50, height: 50)
-                                        .clipShape(Circle())
-                                } else {
-                                    Image(systemName: "person.fill")
-                                        .resizable()
-                                        .aspectRatio(contentMode: .fill)
-                                        .frame(width: 50, height: 50)
-                                        .background(Color.gray)
-                                        .clipShape(Circle())
-                                }
-                                
-                                VStack(alignment: .leading, spacing: 2) {
-                                    Text(review.author ?? "Unknown Author")
-                                        .font(.headline)
-                                    if let rating = review.authorDetails?.rating {
-                                        Text("Rating: \(rating)/10")
-                                            .font(.subheadline)
-                                    }
-                                }
+                    if viewModel.reviews.isEmpty {
+                        if let movieTitle = viewModel.movie.title {
+                            Text("\(movieTitle) has no reviews.")
+                        }
+                    } else {
+                        ForEach(viewModel.reviews, id: \.id) { review in
+                            reviewEntry(review)
+                        }
+
+                        // "Load More" button
+                        if viewModel.reviews.count > 20 {
+                            Button(action: {
+                                viewModel.currentPage += 1
+                                viewModel.fetchReviews(movieId: viewModel.movie.id ?? 0, page: viewModel.currentPage)
+                            }) {
+                                Text("Load More")
+                                    .foregroundColor(.blue)
                             }
-                            
-                            Text(review.content ?? "")
-                                .font(.body)
-                                .padding(.top, 8)
-                            
-                            Divider()
                         }
                     }
                 }
             }
+    }
+    
+    @ViewBuilder
+    private func reviewEntry(_ review: Review) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            HStack {
+                if let avatarPath = review.authorDetails?.avatarPath,
+                   let url = URL(string: "https://image.tmdb.org/t/p/w500\(avatarPath)") {
+                    KFImage(url)
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                        .frame(width: 50, height: 50)
+                        .clipShape(Circle())
+                } else {
+                    Image(systemName: "person.fill")
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                        .frame(width: 50, height: 50)
+                        .background(Color.gray)
+                        .clipShape(Circle())
+                }
+                
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(review.author ?? "Unknown Author")
+                        .font(.headline)
+                    if let rating = review.authorDetails?.rating {
+                        Text("Rating: \(rating)/10")
+                            .font(.subheadline)
+                    }
+                }
+            }
+            
+            Text(review.content ?? "")
+                .font(.body)
+                .padding(.top, 8)
+            
+            Divider()
         }
     }
     
