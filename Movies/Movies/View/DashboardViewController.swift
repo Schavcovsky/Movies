@@ -245,23 +245,25 @@ class DashboardViewController: UIViewController, UISearchBarDelegate {
     
     @objc func searchButtonTapped() {
         guard let query = searchBar.text, !query.isEmpty else { return }
+        viewModel?.currentPage = 1
         viewModel?.searchQuery = query
         viewModel?.isSearchMode = true
         viewModel?.searchMovies(query: query, page: viewModel?.currentPage ?? 1)
         
-        // Reload categoriesCollectionView to reflect no selection
         categoriesCollectionView.reloadData()
+        updateButtonStates() // Update the button states here
     }
     
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         searchBar.resignFirstResponder()
         guard let query = searchBar.text, !query.isEmpty else { return }
+        viewModel?.currentPage = 1
         viewModel?.searchQuery = query
         viewModel?.isSearchMode = true
         viewModel?.searchMovies(query: query, page: viewModel?.currentPage ?? 1)
         
-        // Reload categoriesCollectionView to reflect no selection
         categoriesCollectionView.reloadData()
+        updateButtonStates() // Update the button states here
     }
     
     @objc func decreaseButtonTapped() {
