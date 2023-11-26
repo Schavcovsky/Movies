@@ -85,11 +85,11 @@ class DashboardViewController: UIViewController, UISearchBarDelegate {
     let watchListButton: UIButton = {
         let button = UIButton()
         button.backgroundColor = UIColor(named: "primaryAccentColor")
-        button.setTitle("Watch List", for: .normal)
+        button.setTitle("Favorites", for: .normal)
         button.setTitleColor(UIColor(named: "backgroundColor"), for: .normal)
         button.titleLabel?.font = UIFont.boldSystemFont(ofSize: UIFont.systemFontSize)
         
-        if let image = UIImage(named: "bi_bookmark.empty")?.withRenderingMode(.alwaysTemplate) {
+        if let image = UIImage(named: "heart.filled")?.withRenderingMode(.alwaysTemplate) {
             button.setImage(image, for: .normal)
             button.tintColor = UIColor(named: "backgroundColor")
         }
@@ -156,9 +156,6 @@ class DashboardViewController: UIViewController, UISearchBarDelegate {
         moviesCollectionView.register(MovieCollectionViewCell.self, forCellWithReuseIdentifier: "MovieCell")
         moviesCollectionView.dataSource = self
         moviesCollectionView.delegate = self
-        
-        // Configure the buttons
-        watchListButton.setTitle("Watch List", for: .normal)
         
         // Add subviews
         view.addSubview(subtitleLabel)

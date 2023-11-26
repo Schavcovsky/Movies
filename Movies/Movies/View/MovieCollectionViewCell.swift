@@ -51,7 +51,7 @@ class MovieCollectionViewCell: UICollectionViewCell {
         return label
     }()
     
-    private let checkmarkButton: UIButton = {
+    private let favoriteButton: UIButton = {
         let button = UIButton()
         let image = UIImage(named: "heart.empty")
         let tintedImage = image?.withTintColor(UIColor(named: "secondaryAccentColor")!, renderingMode: .alwaysOriginal)
@@ -76,10 +76,10 @@ class MovieCollectionViewCell: UICollectionViewCell {
         addSubview(releaseDateLabel)
         addSubview(averageRatingLabel)
         
-        contentView.addSubview(checkmarkButton)
+        contentView.addSubview(favoriteButton)
         
-        checkmarkButton.setContentHuggingPriority(.defaultLow, for: .horizontal)
-        checkmarkButton.setContentCompressionResistancePriority(.required, for: .horizontal)
+        favoriteButton.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        favoriteButton.setContentCompressionResistancePriority(.required, for: .horizontal)
     }
     
     private func setupConstraints() {
@@ -99,7 +99,7 @@ class MovieCollectionViewCell: UICollectionViewCell {
             // Title Label Constraints
             titleLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: padding),
             titleLabel.leadingAnchor.constraint(equalTo: movieImageView.trailingAnchor, constant: padding),
-            titleLabel.trailingAnchor.constraint(equalTo: checkmarkButton.leadingAnchor, constant: -padding),
+            titleLabel.trailingAnchor.constraint(equalTo: favoriteButton.leadingAnchor, constant: -padding),
             
             // Release Date Label Constraints
             releaseDateLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: padding),
@@ -112,10 +112,10 @@ class MovieCollectionViewCell: UICollectionViewCell {
             averageRatingLabel.trailingAnchor.constraint(equalTo: titleLabel.trailingAnchor),
             
             // Checkmark Button Constraints
-            checkmarkButton.topAnchor.constraint(equalTo: contentView.topAnchor, constant: padding),
-            checkmarkButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -padding),
-            checkmarkButton.widthAnchor.constraint(equalToConstant: iconSize),
-            checkmarkButton.heightAnchor.constraint(equalToConstant: iconSize),
+            favoriteButton.topAnchor.constraint(equalTo: contentView.topAnchor, constant: padding),
+            favoriteButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -padding),
+            favoriteButton.widthAnchor.constraint(equalToConstant: iconSize),
+            favoriteButton.heightAnchor.constraint(equalToConstant: iconSize),
         ])
     }
     
