@@ -7,6 +7,7 @@
 
 #import "NetworkManager.h"
 #import "Movies-Swift.h"
+@import FirebaseRemoteConfig;
 
 NSString * const MovieSearch = @"search/movie";
 NSString * const MovieCategoryNowPlaying = @"movie/now_playing";
@@ -15,6 +16,10 @@ NSString * const MovieCategoryTopRated = @"movie/top_rated";
 NSString * const MovieCategoryUpcoming = @"movie/upcoming";
 NSString * const MovieDetails = @"movie/details";
 NSString * const MovieRatings = @"movie/ratings";
+
+@interface NetworkManager ()
+@property (nonatomic, strong) NSString *bearerToken;
+@end
 
 @implementation NetworkManager
 
@@ -25,6 +30,22 @@ NSString * const MovieRatings = @"movie/ratings";
         sharedManager = [[self alloc] init];
     });
     return sharedManager;
+}
+
+- (void)fetchRemoteConfigWithCompletion:(void (^)(BOOL success))completion {
+    FIRRemoteConfig *remoteConfig = [FIRRemoteConfig remoteConfig];
+    [remoteConfig fetchWithCompletionHandler:^(FIRRemoteConfigFetchStatus status, NSError * _Nullable error) {
+        if (status == FIRRemoteConfigFetchStatusSuccess) {
+            NSLog(@"Config fetched!");
+            [remoteConfig activateWithCompletion:^(BOOL changed, NSError * _Nullable error) {
+                self.bearerToken = remoteConfig[@"bearer_token"].stringValue;
+                completion(YES);
+            }];
+        } else {
+            NSLog(@"Config not fetched. Error: %@", error);
+            completion(NO);
+        }
+    }];
 }
 
 - (void)fetchMoviesForCategory:(NSString *)category query:(nullable NSString *)query page:(NSInteger)page withCompletion:(void (^)(NSData * _Nullable data, NSError * _Nullable error))completion {
@@ -50,12 +71,11 @@ NSString * const MovieRatings = @"movie/ratings";
     [self performNetworkRequestWithURLString:urlString withCompletion:completion];
 }
 
-// Update urlStringForCategory: method to handle new categories
 - (NSString *)urlStringForCategory:(NSString *)category movieId:(NSInteger)movieId page:(NSInteger)page {
     NSString *baseUrl;
     if ([category isEqualToString:MovieDetails]) {
         baseUrl = [NSString stringWithFormat:@"https://api.themoviedb.org/3/movie/%ld?language=en-US", (long)movieId];
-    } else if ([category isEqualToString:MovieRatings]) { // Fixed here
+    } else if ([category isEqualToString:MovieRatings]) {
         baseUrl = [NSString stringWithFormat:@"https://api.themoviedb.org/3/movie/%ld/reviews?language=en-US&page=%ld", (long)movieId, (long)page];
     } else {
         baseUrl = [self baseUrlForCategory:category];
@@ -63,16 +83,28 @@ NSString * const MovieRatings = @"movie/ratings";
     return baseUrl;
 }
 
-// Extract common network request code
 - (void)performNetworkRequestWithURLString:(NSString *)urlString withCompletion:(void (^)(NSData * _Nullable data, NSError * _Nullable error))completion {
+    if (!self.bearerToken) {
+        [self fetchRemoteConfigWithCompletion:^(BOOL success) {
+            if (success) {
+                [self makeRequestWithURLString:urlString completion:completion];
+            } else {
+                completion(nil, [NSError errorWithDomain:@"NetworkManager" code:1001 userInfo:@{NSLocalizedDescriptionKey: @"Failed to fetch bearer token"}]);
+            }
+        }];
+    } else {
+        [self makeRequestWithURLString:urlString completion:completion];
+    }
+}
+
+- (void)makeRequestWithURLString:(NSString *)urlString completion:(void (^)(NSData * _Nullable data, NSError * _Nullable error))completion {
     NSLog(@"URL being accessed: %@", urlString); // Log for debugging
-    
     NSURL *url = [NSURL URLWithString:urlString];
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
-    [request setValue:@"Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJlMjFkMmRjNzI3ZDgyZmIwYWI1ODkwNzcyNTdiZDZlMSIsInN1YiI6IjY1NWViYmJjODNlZTY3MDFmNjI1OTcyNSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.tr7hmR8OjjOOn3Byu6LG8ykJPvtddeN5F6DJC3MpoGU" forHTTPHeaderField:@"Authorization"];
+    [request setValue:[NSString stringWithFormat:@"Bearer %@", self.bearerToken] forHTTPHeaderField:@"Authorization"];
     [request setValue:@"application/json" forHTTPHeaderField:@"Accept"];
     [request setHTTPMethod:@"GET"];
-    
+
     NSURLSessionDataTask *task = [[NSURLSession sharedSession] dataTaskWithRequest:request completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
         if (error) {
             completion(nil, error);
@@ -80,7 +112,7 @@ NSString * const MovieRatings = @"movie/ratings";
         }
         completion(data, nil);
     }];
-    
+
     [task resume];
 }
 
