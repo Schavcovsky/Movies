@@ -19,7 +19,7 @@ struct FavoritesView: View {
             }
         }
         .onAppear(perform: viewModel.loadFavorites)
-        .navigationBarTitle("Favorites", displayMode: .inline)
+        .navigationBarTitle("Favorites", displayMode: .large)
     }
 }
 
