@@ -9,6 +9,7 @@ import Foundation
 
 class DashboardViewModel {
     
+    var isLoading = false
     // Properties to hold data that the view will display
     var movies: [Result] = [] {
         didSet {
@@ -41,6 +42,7 @@ class DashboardViewModel {
     
     init(networkManager: NetworkManager) {
         self.networkManager = networkManager
+        self.isLoading = true
     }
     
     // Fetching movies
@@ -65,6 +67,7 @@ class DashboardViewModel {
                 DispatchQueue.main.async {
                     // Assign the results to the movies property
                     self.movies = movieResponse.results ?? []
+                    self.isLoading = false
                 }
             } catch {
                 print("Error decoding movies: \(error)")
@@ -92,6 +95,7 @@ class DashboardViewModel {
                 let movieResponse = try JSONDecoder().decode(Movie.self, from: data)
                 DispatchQueue.main.async {
                     self.movies = movieResponse.results ?? []
+                    self.isLoading = false
                 }
             } catch {
                 print("Error decoding search results: \(error)")

@@ -11,6 +11,8 @@ import SwiftUI
 class DashboardViewController: UIViewController, UISearchBarDelegate {
     var viewModel: DashboardViewModel?
     
+    let spinner = UIActivityIndicatorView(style: .large)
+    
     let subtitleLabel: UILabel = {
         let label = UILabel()
         label.text = "Find your movies"
@@ -113,6 +115,7 @@ class DashboardViewController: UIViewController, UISearchBarDelegate {
         setupViews()
         layoutViews()
         setupNavigationBar()
+        spinner.startAnimating()
         
         // Initialize ViewModel
         viewModel = DashboardViewModel(networkManager: NetworkManager.shared())
@@ -121,6 +124,10 @@ class DashboardViewController: UIViewController, UISearchBarDelegate {
         viewModel?.reloadCollectionViewClosure = { [weak self] in
             DispatchQueue.main.async {
                 self?.moviesCollectionView.reloadData()
+                
+                if self?.viewModel?.isLoading == false {
+                    self?.spinner.stopAnimating()
+                }
             }
         }
         
@@ -136,6 +143,8 @@ class DashboardViewController: UIViewController, UISearchBarDelegate {
         let firstCategoryIndexPath = IndexPath(item: 0, section: 0)
         categoriesCollectionView.selectItem(at: firstCategoryIndexPath, animated: false, scrollPosition: .left)
         collectionView(categoriesCollectionView, didSelectItemAt: firstCategoryIndexPath)
+        
+        spinner.startAnimating()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -163,6 +172,7 @@ class DashboardViewController: UIViewController, UISearchBarDelegate {
         moviesCollectionView.delegate = self
         
         // Add subviews
+        view.addSubview(spinner)
         view.addSubview(subtitleLabel)
         view.addSubview(searchBar)
         view.addSubview(searchButton)
@@ -179,12 +189,12 @@ class DashboardViewController: UIViewController, UISearchBarDelegate {
         decreaseButton.addTarget(self, action: #selector(decreaseButtonTapped), for: .touchUpInside)
         increaseButton.addTarget(self, action: #selector(increaseButtonTapped), for: .touchUpInside)
         watchListButton.addTarget(self, action: #selector(watchListButtonTapped), for: .touchUpInside)
-
         
         updateButtonStates()
     }
     
     func layoutViews() {
+        spinner.translatesAutoresizingMaskIntoConstraints = false
         subtitleLabel.translatesAutoresizingMaskIntoConstraints = false
         searchBar.translatesAutoresizingMaskIntoConstraints = false
         searchButton.translatesAutoresizingMaskIntoConstraints = false
@@ -196,6 +206,8 @@ class DashboardViewController: UIViewController, UISearchBarDelegate {
         watchListButton.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
+            spinner.centerXAnchor.constraint(equalTo: moviesCollectionView.centerXAnchor),
+            spinner.centerYAnchor.constraint(equalTo: moviesCollectionView.centerYAnchor),
             
             // Search Sub Title Button Constraints
             subtitleLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16),
