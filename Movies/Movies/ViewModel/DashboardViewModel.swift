@@ -45,6 +45,11 @@ class DashboardViewModel {
         self.isLoading = true
     }
     
+    func retryLastFetch() {
+        let category = categories[activeCategoryIndex].rawValue
+        fetchMovies(category: category, page: currentPage)
+    }
+    
     // Fetching movies
     func fetchMovies(category: String, page: Int) {
         let searchCategory = isSearchMode ? MovieSearch : category

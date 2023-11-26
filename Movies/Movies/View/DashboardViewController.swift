@@ -10,7 +10,7 @@ import SwiftUI
 
 class DashboardViewController: UIViewController, UISearchBarDelegate {
     var viewModel: DashboardViewModel?
-    
+    var connectivityManager: ConnectivityManager?
     let spinner = UIActivityIndicatorView(style: .large)
     
     let subtitleLabel: UILabel = {
@@ -145,6 +145,16 @@ class DashboardViewController: UIViewController, UISearchBarDelegate {
         collectionView(categoriesCollectionView, didSelectItemAt: firstCategoryIndexPath)
         
         spinner.startAnimating()
+        
+        connectivityManager = ConnectivityManager()
+        connectivityManager?.delegate = self
+        connectivityManager?.startMonitoring()
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            if !(self.connectivityManager?.isConnected ?? false) {
+                self.showNoInternetAlert()
+            }
+        }
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -310,6 +320,23 @@ class DashboardViewController: UIViewController, UISearchBarDelegate {
     func updateButtonStates() {
         decreaseButton.isEnabled = viewModel?.currentPage ?? 1 > 1
         decreaseButton.tintColor = decreaseButton.isEnabled ? UIColor(named: "textColor") : .gray
+    }
+}
+
+// Extend DashboardViewController
+extension DashboardViewController: ConnectivityDelegate {
+    func didChangeConnectionStatus(connected: Bool) {
+        if connected {
+            viewModel?.retryLastFetch()
+        } else {
+            showNoInternetAlert()
+        }
+    }
+
+    private func showNoInternetAlert() {
+        let alert = UIAlertController(title: "No Internet Connection", message: "Please check your internet connection.", preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        self.present(alert, animated: true)
     }
 }
 

@@ -147,8 +147,27 @@ class MovieCollectionViewCell: UICollectionViewCell {
     
     @objc private func favoriteButtonTapped() {
         if let movieId = self.movieId, let movieName = self.movieName {
+            let isCurrentlyFavorite = FavoritesManager.shared.isFavorite(movieId: movieId)
+            
             FavoritesManager.shared.toggleFavorite(movieId: movieId, movieName: movieName)
             configureFavoriteButton(movieId: movieId)
+            
+            if !isCurrentlyFavorite {
+                pulseAnimation()
+            }
         }
+    }
+    
+    private func pulseAnimation() {
+        let pulse = CASpringAnimation(keyPath: "transform.scale")
+        pulse.duration = 0.3
+        pulse.fromValue = 0.95
+        pulse.toValue = 1.05
+        pulse.autoreverses = true
+        pulse.repeatCount = 2
+        pulse.initialVelocity = 0.5
+        pulse.damping = 1.0
+        
+        favoriteButton.layer.add(pulse, forKey: nil)
     }
 }
