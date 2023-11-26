@@ -49,16 +49,22 @@ NSString * const MovieRatings = @"movie/ratings";
 }
 
 - (void)fetchMoviesForCategory:(NSString *)category query:(nullable NSString *)query page:(NSInteger)page withCompletion:(void (^)(NSData * _Nullable data, NSError * _Nullable error))completion {
-    NSString *encodedQuery = [query stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
-    
-    NSString *urlString;
-    if ([category isEqualToString:MovieSearch]) {
-        urlString = [NSString stringWithFormat:@"https://api.themoviedb.org/3/search/movie?query=%@&page=%ld", encodedQuery, (long)page];
-    } else {
-        urlString = [self urlStringForCategory:category page:page];
-    }
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        NSString *encodedQuery = [query stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
+        
+        NSString *urlString;
+        if ([category isEqualToString:MovieSearch]) {
+            urlString = [NSString stringWithFormat:@"https://api.themoviedb.org/3/search/movie?query=%@&page=%ld", encodedQuery, (long)page];
+        } else {
+            urlString = [self urlStringForCategory:category page:page];
+        }
 
-    [self performNetworkRequestWithURLString:urlString withCompletion:completion];
+        [self performNetworkRequestWithURLString:urlString withCompletion:^(NSData *data, NSError *error) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                completion(data, error);
+            });
+        }];
+    });
 }
 
 - (void)fetchMovieDetailsForId:(NSInteger)movieId withCompletion:(void (^)(NSData * _Nullable data, NSError * _Nullable error))completion {

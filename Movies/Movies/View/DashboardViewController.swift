@@ -153,6 +153,10 @@ class DashboardViewController: UIViewController, UISearchBarDelegate {
                 self.showNoInternetAlert()
             }
         }
+        
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(viewTapped))
+        tapGesture.cancelsTouchesInView = false
+        view.addGestureRecognizer(tapGesture)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -292,7 +296,11 @@ class DashboardViewController: UIViewController, UISearchBarDelegate {
         categoriesCollectionView.reloadData()
         updateButtonStates() // Update the button states here
     }
-    
+
+    @objc func viewTapped() {
+        searchBar.resignFirstResponder()
+    }
+
     @objc func decreaseButtonTapped() {
         guard let viewModel = viewModel, viewModel.currentPage > 1 else { return }
         viewModel.currentPage -= 1

@@ -59,7 +59,7 @@ class CategoryCollectionViewCell: UICollectionViewCell {
             titleLabelContainer.topAnchor.constraint(equalTo: contentView.topAnchor),
             titleLabelContainer.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
             titleLabelContainer.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
-            titleLabelContainer.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+            titleLabelContainer.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: 8),
             
             titleLabel.topAnchor.constraint(equalTo: titleLabelContainer.topAnchor, constant: 8), // Adjust top padding
             titleLabel.bottomAnchor.constraint(equalTo: titleLabelContainer.bottomAnchor, constant: -8), // Adjust bottom padding
