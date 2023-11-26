@@ -53,16 +53,7 @@ class MovieCollectionViewCell: UICollectionViewCell {
     
     private let checkmarkButton: UIButton = {
         let button = UIButton()
-        let image = UIImage(named: "bi_bookmark.empty")
-        let tintedImage = image?.withTintColor(UIColor(named: "secondaryAccentColor")!, renderingMode: .alwaysOriginal)
-        button.setImage(tintedImage, for: .normal)
-        button.translatesAutoresizingMaskIntoConstraints = false
-        return button
-    }()
-    
-    private let starRatingButton: UIButton = {
-        let button = UIButton()
-        let image = UIImage(named: "clarity_star.empty")
+        let image = UIImage(named: "heart.empty")
         let tintedImage = image?.withTintColor(UIColor(named: "secondaryAccentColor")!, renderingMode: .alwaysOriginal)
         button.setImage(tintedImage, for: .normal)
         button.translatesAutoresizingMaskIntoConstraints = false
@@ -86,13 +77,9 @@ class MovieCollectionViewCell: UICollectionViewCell {
         addSubview(averageRatingLabel)
         
         contentView.addSubview(checkmarkButton)
-        contentView.addSubview(starRatingButton)
         
         checkmarkButton.setContentHuggingPriority(.defaultLow, for: .horizontal)
         checkmarkButton.setContentCompressionResistancePriority(.required, for: .horizontal)
-        
-        starRatingButton.setContentHuggingPriority(.defaultLow, for: .horizontal)
-        starRatingButton.setContentCompressionResistancePriority(.required, for: .horizontal)
     }
     
     private func setupConstraints() {
@@ -129,12 +116,6 @@ class MovieCollectionViewCell: UICollectionViewCell {
             checkmarkButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -padding),
             checkmarkButton.widthAnchor.constraint(equalToConstant: iconSize),
             checkmarkButton.heightAnchor.constraint(equalToConstant: iconSize),
-            
-            // Star Rating Button Constraints
-            starRatingButton.topAnchor.constraint(equalTo: checkmarkButton.bottomAnchor, constant: padding),
-            starRatingButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -padding),
-            starRatingButton.widthAnchor.constraint(equalToConstant: iconSize),
-            starRatingButton.heightAnchor.constraint(equalToConstant: iconSize),
         ])
     }
     
