@@ -345,14 +345,13 @@ extension DashboardViewController: UICollectionViewDelegate {
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         if collectionView == moviesCollectionView {
-            guard let movieId = viewModel?.movies[indexPath.item].id else { return }
-                    
-            let movieDetailsViewModel = MovieDetailsViewModel(movieId: movieId)
-            movieDetailsViewModel.fetchMovieDetails(movieId: movieId)
-
-            let detailsView = MovieDetailsView(viewModel: movieDetailsViewModel)
-            let hostingController = UIHostingController(rootView: detailsView)
-            self.navigationController?.pushViewController(hostingController, animated: true)
+            if let movie = viewModel?.movie(at: indexPath) {
+                let movieDetailsViewModel = MovieDetailsViewModel(movieId: movie.id ?? 0)
+                // If you have pre-fetched data, you could initialize the MovieDetailsViewModel with it
+                let detailsView = MovieDetailsView(viewModel: movieDetailsViewModel)
+                let hostingController = UIHostingController(rootView: detailsView)
+                self.navigationController?.pushViewController(hostingController, animated: true)
+            }
         } else {
             viewModel?.isSearchMode = false
             viewModel?.searchQuery = nil

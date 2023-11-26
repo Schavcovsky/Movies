@@ -74,7 +74,7 @@ struct MovieDetailsView: View {
                     // Movie Title and Genre Buttons
                     VStack(alignment: .leading, spacing: 8) {
                         // Movie Title
-                        Text(viewModel.movie.title ?? "N/A")
+                        Text(viewModel.movie.title ?? "")
                             .font(.title2)
                             .fontWeight(.bold)
                     }
