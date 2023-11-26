@@ -43,7 +43,7 @@ class FavoritesManager {
     }
 
     // Optional: Method to get the name of a favorited movie
-    func favoriteMovieName(movieId: Int) -> String? {
-        favorites[movieId]
-    }
+    func getAllFavoriteMovieNames() -> [String] {
+       return Array(favorites.values).sorted()
+   }
 }

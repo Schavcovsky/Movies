@@ -173,6 +173,8 @@ class DashboardViewController: UIViewController, UISearchBarDelegate {
         
         decreaseButton.addTarget(self, action: #selector(decreaseButtonTapped), for: .touchUpInside)
         increaseButton.addTarget(self, action: #selector(increaseButtonTapped), for: .touchUpInside)
+        watchListButton.addTarget(self, action: #selector(watchListButtonTapped), for: .touchUpInside)
+
         
         updateButtonStates()
     }
@@ -282,6 +284,12 @@ class DashboardViewController: UIViewController, UISearchBarDelegate {
         updateButtonStates()
     }
     
+    @objc func watchListButtonTapped() {
+        let favoritesView = FavoritesView()
+        let hostingController = UIHostingController(rootView: favoritesView)
+        self.navigationController?.pushViewController(hostingController, animated: true)
+    }
+
     func updateButtonStates() {
         decreaseButton.isEnabled = viewModel?.currentPage ?? 1 > 1
         decreaseButton.tintColor = decreaseButton.isEnabled ? UIColor(named: "textColor") : .gray
