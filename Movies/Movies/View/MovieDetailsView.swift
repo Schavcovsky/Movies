@@ -14,11 +14,13 @@ struct MovieDetailsView: View {
     @State private var posterImageOpacity = 0.0
     @State private var scale: CGFloat = 1.0
     @State var selectedTab: DetailsTab = .about
-
+    @State private var showAlert = false
+    
+    
     init(viewModel: MovieDetailsViewModel) {
-       self.viewModel = viewModel
-   }
-
+        self.viewModel = viewModel
+    }
+    
     var body: some View {
         ScrollView {
             VStack {
@@ -125,6 +127,16 @@ struct MovieDetailsView: View {
                 .padding()
             }
         }
+        .alert(isPresented: $showAlert) {
+            Alert(
+                title: Text("Error"),
+                message: Text(viewModel.errorMessage ?? ""),
+                dismissButton: .default(Text("OK"))
+            )
+        }
+        .onReceive(viewModel.$errorMessage) { errorMessage in
+            showAlert = errorMessage != nil
+        }
         .navigationBarItems(trailing: Button(action: {
             let wasFavorite = viewModel.isFavorite
             viewModel.toggleFavorite()
@@ -169,33 +181,32 @@ struct MovieDetailsView: View {
     // Helper function for the Reviews View
     private func reviewsView() -> some View {
         VStack(alignment: .leading, spacing: 8) {
-                if viewModel.isLoading {
-                    Spacer()
-                    ProgressView()
-                    Spacer()
+            if viewModel.isLoading {
+                Spacer()
+                ProgressView()
+                Spacer()
+            } else {
+                if viewModel.reviews.isEmpty {
+                    if let movieTitle = viewModel.movie.title {
+                        Text("\(movieTitle) has no reviews.")
+                    }
                 } else {
-                    if viewModel.reviews.isEmpty {
-                        if let movieTitle = viewModel.movie.title {
-                            Text("\(movieTitle) has no reviews.")
-                        }
-                    } else {
-                        ForEach(viewModel.reviews, id: \.id) { review in
-                            reviewEntry(review)
-                        }
-
-                        // "Load More" button
-                        if viewModel.reviews.count > 20 {
-                            Button(action: {
-                                viewModel.currentPage += 1
-                                viewModel.fetchReviews(movieId: viewModel.movie.id ?? 0, page: viewModel.currentPage)
-                            }) {
-                                Text("Load More")
-                                    .foregroundColor(.blue)
-                            }
+                    ForEach(viewModel.reviews, id: \.id) { review in
+                        reviewEntry(review)
+                    }
+                    
+                    if viewModel.reviews.count > 20 {
+                        Button(action: {
+                            viewModel.currentPage += 1
+                            viewModel.fetchReviews(movieId: viewModel.movie.id ?? 0, page: viewModel.currentPage)
+                        }) {
+                            Text("Load More")
+                                .foregroundColor(.blue)
                         }
                     }
                 }
             }
+        }
     }
     
     @ViewBuilder
@@ -250,7 +261,7 @@ struct MovieDetailsView: View {
         withAnimation(Animation.easeInOut(duration: 0.5).repeatCount(3, autoreverses: true)) {
             scale = 1.2
         }
-
+        
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
             scale = 1.0
         }
@@ -331,10 +342,10 @@ struct MovieDetailsView_Previews: PreviewProvider {
             voteAverage: 7.5,
             voteCount: 200
         )
-
+        
         // Create a mock view model with the mock movie
         let mockViewModel = MovieDetailsViewModel(movieId: mockMovie.id ?? 0)
-
+        
         // Previewing the MovieDetailsView with the mock view model
         MovieDetailsView(viewModel: mockViewModel)
     }

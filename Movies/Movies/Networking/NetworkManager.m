@@ -36,13 +36,11 @@ NSString * const MovieRatings = @"movie/ratings";
     FIRRemoteConfig *remoteConfig = [FIRRemoteConfig remoteConfig];
     [remoteConfig fetchWithCompletionHandler:^(FIRRemoteConfigFetchStatus status, NSError * _Nullable error) {
         if (status == FIRRemoteConfigFetchStatusSuccess) {
-            NSLog(@"Config fetched!");
             [remoteConfig activateWithCompletion:^(BOOL changed, NSError * _Nullable error) {
                 self.bearerToken = remoteConfig[@"bearer_token"].stringValue;
                 completion(YES);
             }];
         } else {
-            NSLog(@"Config not fetched. Error: %@", error);
             completion(NO);
         }
     }];
@@ -58,7 +56,7 @@ NSString * const MovieRatings = @"movie/ratings";
         } else {
             urlString = [self urlStringForCategory:category page:page];
         }
-
+        
         [self performNetworkRequestWithURLString:urlString withCompletion:^(NSData *data, NSError *error) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 completion(data, error);
@@ -104,13 +102,12 @@ NSString * const MovieRatings = @"movie/ratings";
 }
 
 - (void)makeRequestWithURLString:(NSString *)urlString completion:(void (^)(NSData * _Nullable data, NSError * _Nullable error))completion {
-    NSLog(@"URL being accessed: %@", urlString); // Log for debugging
     NSURL *url = [NSURL URLWithString:urlString];
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
     [request setValue:[NSString stringWithFormat:@"Bearer %@", self.bearerToken] forHTTPHeaderField:@"Authorization"];
     [request setValue:@"application/json" forHTTPHeaderField:@"Accept"];
     [request setHTTPMethod:@"GET"];
-
+    
     NSURLSessionDataTask *task = [[NSURLSession sharedSession] dataTaskWithRequest:request completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
         if (error) {
             completion(nil, error);
@@ -118,7 +115,7 @@ NSString * const MovieRatings = @"movie/ratings";
         }
         completion(data, nil);
     }];
-
+    
     [task resume];
 }
 
@@ -127,7 +124,6 @@ NSString * const MovieRatings = @"movie/ratings";
     if (![baseUrl isEqualToString:@""]) {
         return [NSString stringWithFormat:@"%@&page=%ld", baseUrl, (long)page];
     } else {
-        NSLog(@"Base URL is empty for category: %@", category);
         return @"";
     }
 }

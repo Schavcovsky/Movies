@@ -99,7 +99,7 @@ class MovieCollectionViewCell: UICollectionViewCell {
             movieImageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -padding),
             movieImageView.heightAnchor.constraint(equalToConstant: contentView.frame.height),
             movieImageView.widthAnchor.constraint(equalToConstant: fixedWidth),
-                        
+            
             // Title Label Constraints
             titleLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: padding),
             titleLabel.leadingAnchor.constraint(equalTo: movieImageView.trailingAnchor, constant: padding),

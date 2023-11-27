@@ -38,7 +38,7 @@ class CategoryCollectionViewCell: UICollectionViewCell {
             isActive = isSelected
         }
     }
-
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupViews()
@@ -61,10 +61,10 @@ class CategoryCollectionViewCell: UICollectionViewCell {
             titleLabelContainer.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
             titleLabelContainer.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: 8),
             
-            titleLabel.topAnchor.constraint(equalTo: titleLabelContainer.topAnchor, constant: 8), // Adjust top padding
-            titleLabel.bottomAnchor.constraint(equalTo: titleLabelContainer.bottomAnchor, constant: -8), // Adjust bottom padding
-            titleLabel.leadingAnchor.constraint(equalTo: titleLabelContainer.leadingAnchor, constant: 24), // Adjust left padding
-            titleLabel.trailingAnchor.constraint(equalTo: titleLabelContainer.trailingAnchor, constant: -24), // Adjust right padding
+            titleLabel.topAnchor.constraint(equalTo: titleLabelContainer.topAnchor, constant: 8),
+            titleLabel.bottomAnchor.constraint(equalTo: titleLabelContainer.bottomAnchor, constant: -8),
+            titleLabel.leadingAnchor.constraint(equalTo: titleLabelContainer.leadingAnchor, constant: 24),
+            titleLabel.trailingAnchor.constraint(equalTo: titleLabelContainer.trailingAnchor, constant: -24),
         ])
     }
     

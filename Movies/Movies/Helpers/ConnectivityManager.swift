@@ -15,9 +15,9 @@ class ConnectivityManager {
     private let monitor = NWPathMonitor()
     private let queue = DispatchQueue(label: "ConnectivityMonitor")
     weak var delegate: ConnectivityDelegate?
-
+    
     private(set) var isConnected: Bool = false
-
+    
     init() {
         monitor.pathUpdateHandler = { [weak self] path in
             let isConnectedNow = path.status == .satisfied
@@ -29,15 +29,15 @@ class ConnectivityManager {
             }
         }
     }
-
+    
     func startMonitoring() {
         monitor.start(queue: queue)
     }
-
+    
     func stopMonitoring() {
         monitor.cancel()
     }
-
+    
     deinit {
         stopMonitoring()
     }

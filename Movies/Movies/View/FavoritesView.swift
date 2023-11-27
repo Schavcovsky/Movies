@@ -9,7 +9,7 @@ import SwiftUI
 
 struct FavoritesView: View {
     @ObservedObject var viewModel: FavoritesViewModel
-
+    
     var body: some View {
         Group {
             if viewModel.favoriteMovies.isEmpty {
@@ -23,7 +23,7 @@ struct FavoritesView: View {
         .onAppear(perform: viewModel.loadFavorites)
         .navigationBarTitle("Favorites", displayMode: .large)
     }
-
+    
     private var movieList: some View {
         List(viewModel.favoriteMovies, id: \.id) { favorite in
             NavigationLink(destination: MovieDetailsView(viewModel: MovieDetailsViewModel(movieId: favorite.id))) {

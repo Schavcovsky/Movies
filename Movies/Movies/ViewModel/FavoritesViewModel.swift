@@ -18,11 +18,13 @@ class DefaultFavoritesViewFactory: FavoritesViewFactory {
     }
 }
 
-import Foundation
+protocol FavoritesViewModelProtocol {
+    func loadFavorites()
+}
 
-final class FavoritesViewModel: ObservableObject {
+final class FavoritesViewModel: ObservableObject, FavoritesViewModelProtocol {
     @Published var favoriteMovies: [(id: Int, name: String)] = []
-
+    
     func loadFavorites() {
         favoriteMovies = FavoritesManager.shared.getFavoritesSortedByMostRecent()
     }

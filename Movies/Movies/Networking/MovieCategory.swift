@@ -11,14 +11,14 @@ enum MovieCategory: String {
     case nowPlaying = "movie/now_playing"
     case popular = "movie/popular"
     case upcoming = "movie/upcoming"
-
+    
     var displayName: String {
         switch self {
-            case .search: return "Search"
-            case .topRated: return "Top Rated"
-            case .nowPlaying: return "Now Playing"
-            case .popular: return "Popular"
-            case .upcoming: return "Upcoming"
+        case .search: return "Search"
+        case .topRated: return "Top Rated"
+        case .nowPlaying: return "Now Playing"
+        case .popular: return "Popular"
+        case .upcoming: return "Upcoming"
         }
     }
 }
