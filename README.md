@@ -20,7 +20,7 @@ Movies is a native iOS movile app for movie enthusiasts, offering comprehensive 
 - **UI Frameworks**: UIKit and SwiftUI.
 - **Architecture**: MVVM pattern.
 - **Unit Testing**: Inclusion of unit tests.
-- **Network Layer**: Developed in Objective-C, requiring a bearer token from Firebase AppConfig.
+- **Network Layer**: Developed in Objective-C, requiring a bearer token from Firebase RemoteConfig.
 - **Dependency Injection**: Implemented using Swinject for enhanced modularity.
 - **Pagination**: Supports browsing through movie lists with pagination.
 - **Persistence**: Facilitates favoriting movies with an ordered persistence mechanism.
