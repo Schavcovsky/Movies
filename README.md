@@ -33,7 +33,7 @@ Movies App is a native iOS movile app for movie enthusiasts, offering comprehens
 
 While the app is fully functional and robust, there are areas for improvement:
 - **Code Refactoring**: Continuous refactoring for improved code efficiency and maintainability.
-- **Expanded Test Coverage**: Enhancing the scope of unit and integration tests.
+- **Expanded Test Coverage**: Enhancing the scope of unit tests.
 
 ## 💻 Getting Started
 
