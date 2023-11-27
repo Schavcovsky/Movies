@@ -1,6 +1,9 @@
 # Movies
 
-Movies App is a native iOS movile app for movie enthusiasts, offering comprehensive access to a wide range of movies from the TMDB API. It features various categories, detailed movie information, a robust search functionality, and user-centric favorites management.
+Movies App is a native iOS movile app for movie enthusiasts, offering comprehensive access to a wide range of movies from the TMDB API. It features various categories, detailed movie information, a robust search functionality, and user-centric favorites management. Additionally, its user interface is dynamically designed to adapt to the available content, ensuring an engaging and seamless experience regardless of the data being displayed.
+
+![feature](https://github.com/Schavcovsky/Movies/assets/8847468/e4400c7c-497c-4d82-962f-38d493571523)
+
 
 ## 📝 Features
 
