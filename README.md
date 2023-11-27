@@ -38,7 +38,8 @@ To set up the app:
 2. Open the project in Xcode.
 3. Run `pod install` to install necessary CocoaPod dependencies.
 4. Build and run the app in your preferred simulator or device.
-5. ℹ️ On the first run it will take some time to retrieve the bearer token from Firebase RemoteConfig.
+  
+**ℹ️ On the first run it will take some time to retrieve the bearer token from Firebase RemoteConfig.**
 
 ## 📄 License
 This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.
