@@ -24,6 +24,7 @@ Movies App is a native iOS movile app for movie enthusiasts, offering comprehens
 - **Network Monitoring**: Includes a network monitor for alerting and handling connectivity issues.
 - **Image Management**: Utilizes Kingfisher for image downloading and caching.
 - **Dependency Management**: Managed through CocoaPods and Swift Package Manager.
+- **Dark Mode Ready**: Supports Dark Mode and Light Moide for optimal viewing comfort and accessibility.
 
 ## 🤲🏻 Improvement Opportunities
 
