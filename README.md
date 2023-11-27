@@ -41,7 +41,7 @@ To set up the app:
 4. Build and run the app in your preferred simulator or device.
 
 ## ⚠️ Disclaimer
-**Please note that on the initial launch, retrieving the bearer token from Firebase RemoteConfig may take some time. Please be patience, there's no need to close the app. Once the token is successfully acquired, the movies will automatically load, and the initial alert message can be dismissed.**
+**Please note that on the initial launch, retrieving the bearer token from Firebase RemoteConfig may take some time. Please be patient, there's no need to close the app. Once the token is successfully acquired, the movies will automatically load, and the initial alert message can be dismissed.**
 
 ## 📄 License
 This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.
